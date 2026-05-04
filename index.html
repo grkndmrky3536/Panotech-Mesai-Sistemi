@@ -3,70 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panotech Giriş Sistemi</title>
+    <title>Panotech Asansör Giriş</title>
     <style>
+        /* Görseldeki Panotech Turuncusu ve Gri Tonları */
         :root { 
             --panotech-orange: #b33a1b; 
-            --bg-dark: #1a1a1a; 
+            --panotech-text-gray: #4a4a4a; 
+            --panotech-light-gray: #5e5e5e;
         }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: var(--panotech-orange); 
-            display: flex; justify-content: center; align-items: center; 
-            height: 100vh; margin: 0; 
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: "Times New Roman", Times, serif; /* Görseldeki font stili */
+            background-color: var(--panotech-orange);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .login-container {
-            background: white; padding: 40px; border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 100%; max-width: 350px;
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.05); /* Çok hafif şeffaf beyazlık */
+            padding: 50px;
             text-align: center;
+            width: 100%;
+            max-width: 500px;
         }
-        .brand-name { color: var(--panotech-orange); font-size: 2rem; font-weight: 900; margin-bottom: 5px; }
-        .brand-sub { font-size: 0.8rem; color: #666; margin-bottom: 30px; letter-spacing: 2px; }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        /* Görseldeki Panotech Yazı Fontu ve Rengi */
+        .brand-name {
+            color: var(--panotech-text-gray);
+            font-size: 3.5rem;
+            font-weight: normal;
+            letter-spacing: 2px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .brand-sub {
+            color: var(--panotech-light-gray);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            line-height: 1.4;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .login-form {
+            background: white;
+            padding: 30px;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
         input {
-            width: 100%; padding: 12px; margin-bottom: 15px;
-            border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 2px;
+            box-sizing: border-box;
+            font-family: serif;
+            font-size: 1rem;
         }
+
         button {
-            width: 100%; padding: 12px; border: none; border-radius: 6px;
-            background-color: var(--panotech-orange); color: white;
-            font-weight: bold; cursor: pointer; transition: 0.3s;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background-color: var(--panotech-text-gray);
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
+            letter-spacing: 1px;
         }
-        button:hover { opacity: 0.9; }
+
+        button:hover {
+            background-color: #333;
+        }
+
+        /* İkon simülasyonu */
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--panotech-orange);
+            border: 3px solid var(--panotech-text-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--panotech-text-gray);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
     </style>
 </head>
 <body>
 
-<div class="login-container">
-    <div class="brand-name">PANOTECH</div>
-    <div class="brand-sub">YÖNETİM SİSTEMİ</div>
-    
-    <input type="text" id="username" placeholder="Kullanıcı Adı">
-    <input type="password" id="password" placeholder="Şifre">
-    <button onclick="handleLogin()">SİSTEME GİRİŞ YAP</button>
+<div class="login-card">
+    <div class="logo-area">
+        <h1 class="brand-name">PANOTECH</h1>
+    </div>
+    <div class="brand-sub">
+        ASANSÖR KONTROL SİSTEMLERİ <br>
+        SAN. ve TİC. LTD. ŞTİ.
+    </div>
+
+    <div class="login-form" style="margin-top: 40px;">
+        <input type="text" id="username" placeholder="Kullanıcı Adı">
+        <input type="password" id="password" placeholder="Şifre">
+        <button onclick="handleLogin()">Giriş Yap</button>
+    </div>
 </div>
 
 <script>
-    // GitHub üzerinde statik çalışacağı için kullanıcı verilerini şimdilik burada tutuyoruz
     const users = [
-        { user: "admin", pass: "1234", role: "admin", name: "Gürkan Demirkaya" },
-        { user: "personel1", pass: "5678", role: "personel", name: "Personel Kullanıcı" }
+        { user: "admin", pass: "1234", role: "admin", name: "Gürkan Demirkaya" }
     ];
 
     function handleLogin() {
         const u = document.getElementById('username').value;
         const p = document.getElementById('password').value;
 
-        const foundUser = users.find(x => x.user === u && x.pass === p);
+        // Önce localStorage'dan personelleri kontrol et (yönetici panelinde eklediklerin için)
+        const db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [] };
+        const allUsers = [...users, ...db.users];
+
+        const foundUser = allUsers.find(x => x.user === u && x.pass === p);
 
         if (foundUser) {
-            // Kullanıcı bilgilerini tarayıcı hafızasına alıyoruz
             sessionStorage.setItem('loggedUser', JSON.stringify(foundUser));
-            
-            // Yetkiye göre yönlendirme yapıyoruz
             if (foundUser.role === 'admin') {
-                window.location.href = 'admin.html'; // Yönetici paneline git
+                window.location.href = 'admin.html';
             } else {
-                window.location.href = 'personel.html'; // Personel paneline git
+                window.location.href = 'personel.html';
             }
         } else {
             alert("Hatalı kullanıcı adı veya şifre!");
