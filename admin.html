@@ -3,105 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panotech - Yönetici Paneli</title>
+    <title>PANOTECH YÖNETİCİ</title>
     <style>
-        :root { --panotech-orange: #b33a1b; --admin-purple: #6b46c1; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
-        .header { background: white; padding: 15px 20px; display: flex; justify-content: space-between; border-bottom: 2px solid var(--panotech-orange); }
-        .container { max-width: 1200px; margin: 20px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .section-title { color: var(--admin-purple); border-bottom: 1px solid #ddd; padding-bottom: 5px; margin-top: 20px; font-size: 1.1rem; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 10px; }
-        input, select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%; box-sizing: border-box; }
-        .btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 15px; }
-        .btn-purple { background: var(--admin-purple); color: white; }
-        .license-box { display: flex; flex-wrap: wrap; gap: 10px; background: #eee; padding: 10px; border-radius: 6px; margin-top: 5px; }
-        .staff-card { border-left: 5px solid var(--admin-purple); padding: 15px; background: #fdf2f2; margin-top: 10px; border-radius: 8px; position: relative; }
-        .tag { background: #e2e8f0; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-right: 5px; }
+        body { font-family: sans-serif; background-color: #f4f7f9; margin: 0; padding: 0; }
+        .header { background: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #b33a1b; }
+        .header h1 { color: #b33a1b; font-size: 1.2rem; margin: 0; text-transform: uppercase; }
+        
+        .main-container { max-width: 1000px; margin: 30px auto; background: white; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 25px; }
+        
+        .section-title { color: #6b46c1; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        
+        .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
+        .full-width { grid-column: span 2; }
+        
+        input, select { padding: 10px; border: 1px solid #ddd; border-radius: 5px; width: 100%; box-sizing: border-box; }
+        
+        .license-area { background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .license-grid { display: flex; gap: 20px; font-size: 0.9rem; }
+        
+        .btn-submit { background: #6b46c1; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .btn-submit:hover { background: #553c9a; }
+
+        /* Personel Kartı Tasarımı */
+        .staff-card { background: #fff5f5; border-radius: 8px; padding: 15px; margin-bottom: 10px; border-left: 5px solid #6b46c1; }
+        .staff-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 8px; }
+        .staff-info { display: flex; gap: 10px; flex-wrap: wrap; }
+        .badge { background: #e2e8f0; padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; color: #4a5568; }
+        
+        /* Mesai/İzin Tablosu */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
+        th { text-align: left; background: #6b46c1; color: white; padding: 10px; }
+        td { padding: 10px; border-bottom: 1px solid #eee; }
+        .multiplier { font-weight: bold; color: #b33a1b; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div style="color:var(--panotech-orange); font-weight:900;">PANOTECH YÖNETİCİ</div>
-    <button onclick="location.href='index.html'" style="cursor:pointer; background:none; border:1px solid #ccc; padding:5px 10px; border-radius:4px;">Güvenli Çıkış</button>
+    <h1>PANOTECH YÖNETİCİ</h1>
+    <button onclick="location.href='index.html'" style="cursor:pointer; background:white; border:1px solid #ddd; padding:5px 15px; border-radius:4px;">Güvenli Çıkış</button>
 </div>
 
-<div class="container">
-    <h3 class="section-title">👤 PERSONEL KAYIT FORMU</h3>
-    <div class="grid">
-        <input type="text" id="name" placeholder="Ad Soyad">
-        <input type="text" id="user" placeholder="Kullanıcı Adı">
-        <input type="password" id="pass" placeholder="Şifre">
-        <select id="gender"><option value="">Cinsiyet</option><option value="Erkek">Erkek</option><option value="Kadın">Kadın</option></select>
-        <input type="number" id="age" placeholder="Yaş">
+<div class="main-container">
+    <!-- PERSONEL KAYIT FORMU -->
+    <div class="section-title">👤 PERSONEL KAYIT FORMU</div>
+    <div class="form-grid">
+        <input type="text" id="pName" placeholder="Ad Soyad">
+        <input type="text" id="pUser" placeholder="Kullanıcı Adı">
+        <input type="password" id="pPass" placeholder="Şifre">
+        <input type="number" id="pSalary" placeholder="Net Maaş (TL)"> <!-- Maaş eklendi -->
     </div>
-
-    <div class="grid">
-        <select id="edu">
-            <option value="">Eğitim Durumu (Diploma)</option>
-            <option value="İlkokul">İlkokul</option>
-            <option value="Lise">Lise</option>
-            <option value="Önlisans">Önlisans</option>
-            <option value="Üniversite">Üniversite</option>
-        </select>
-        <select id="unvan">
+    <div class="form-grid">
+        <select id="pGender"><option>Cinsiyet</option><option>Erkek</option><option>Kadın</option></select>
+        <input type="number" id="pAge" placeholder="Yaş">
+        <select id="pEdu" class="full-width"><option>Eğitim Durumu (Diploma)</option><option>Lise</option><option>Önlisans</option><option>Lisans</option></select>
+        <select id="pTitle" class="full-width"> <!-- Ünvan dropdown -->
             <option value="">Ünvan Seçin</option>
-            <option value="PANO MONTAJ USTASI">PANO MONTAJ USTASI</option>
             <option value="TEKNİK DESTEK ELAMANI">TEKNİK DESTEK ELAMANI</option>
-            <option value="MUHASEBECİ">MUHASEBECİ</option>
+            <option value="PANO MONTAJ USTASI">PANO MONTAJ USTASI</option>
         </select>
     </div>
 
-    <p style="font-size:12px; margin-bottom:5px; font-weight:bold;">SÜRÜCÜ BELGELERİ:</p>
-    <div class="license-box" id="licenses">
-        <label><input type="checkbox" value="B"> B</label>
-        <label><input type="checkbox" value="BE"> BE</label>
-        <label><input type="checkbox" value="C"> C</label>
-        <label><input type="checkbox" value="D"> D</label>
-        <label><input type="checkbox" value="G"> G (İş Makinası)</label>
+    <div class="license-area">
+        <strong>SÜRÜCÜ BELGELERİ:</strong>
+        <div class="license-grid" style="margin-top:10px;">
+            <label><input type="checkbox" name="lic" value="B"> B</label>
+            <label><input type="checkbox" name="lic" value="BE"> BE</label>
+            <label><input type="checkbox" name="lic" value="C"> C</label>
+            <label><input type="checkbox" name="lic" value="D"> D</label>
+            <label><input type="checkbox" name="lic" value="G"> G (İş Makinası)</label>
+        </div>
     </div>
+    <button class="btn-submit" onclick="saveStaff()">PERSONELİ SİSTEME TANIMLA</button>
 
-    <button class="btn btn-purple" onclick="saveStaff()">PERSONELİ SİSTEME TANIMLA</button>
-
-    <h3 class="section-title">📋 KAYITLI PERSONEL LİSTESİ</h3>
+    <!-- KAYITLI PERSONEL LİSTESİ -->
+    <div class="section-title" style="margin-top:40px;">📋 KAYITLI PERSONEL LİSTESİ</div>
     <div id="staffList"></div>
+
+    <!-- MESAİ VE İZİN TAKİBİ -->
+    <div class="section-title" style="margin-top:40px;">📊 MESAİ VE İZİN HAREKETLERİ</div>
+    <div id="movementsTable"></div>
 </div>
 
 <script>
     function saveStaff() {
-        const staff = {
-            name: document.getElementById('name').value,
-            user: document.getElementById('user').value,
-            pass: document.getElementById('pass').value,
-            gender: document.getElementById('gender').value,
-            age: document.getElementById('age').value,
-            edu: document.getElementById('edu').value,
-            unvan: document.getElementById('unvan').value,
-            licenses: Array.from(document.querySelectorAll('#licenses input:checked')).map(cb => cb.value)
+        const salary = document.getElementById('pSalary').value;
+        const licenses = Array.from(document.querySelectorAll('input[name="lic"]:checked')).map(c => c.value);
+        
+        const newStaff = {
+            name: document.getElementById('pName').value,
+            user: document.getElementById('pUser').value,
+            pass: document.getElementById('pPass').value,
+            salary: parseFloat(salary) || 0,
+            hourlyRate: (parseFloat(salary) || 0) / 225, // 225 saat baz alındı
+            gender: document.getElementById('pGender').value,
+            age: document.getElementById('pAge').value,
+            edu: document.getElementById('pEdu').value,
+            title: document.getElementById('pTitle').value,
+            license: licenses.join(', '),
+            role: 'personel'
         };
 
-        if(!staff.user || !staff.pass) return alert("Kullanıcı adı ve şifre zorunludur!");
-
-        let db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [] };
-        db.users.push(staff);
+        let db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
+        db.users.push(newStaff);
         localStorage.setItem('panotech_db', JSON.stringify(db));
-        alert("Personel Kaydedildi!");
-        renderList();
+        location.reload();
     }
 
-    function renderList() {
-        const list = document.getElementById('staffList');
-        const db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [] };
-        list.innerHTML = db.users.map(u => `
+    function calculateRow(r, hourlyRate) {
+        if(r.type === 'İzin') return { cost: 0, multi: 'İzinli' };
+        
+        const date = new Date(r.startDate);
+        const day = date.getDay(); // 0: Pazar, 6: Cumartesi
+        const start = new Date(`${r.startDate}T${r.in}`);
+        const end = new Date(`${r.startDate}T${r.out}`);
+        const hours = (end - start) / (1000 * 60 * 60);
+
+        if(day === 0) return { cost: hours * hourlyRate * 2, multi: 'x2.0 (Pazar)' };
+        if(day === 6) return { cost: hours * hourlyRate * 1.5, multi: 'x1.5 (Cmt)' };
+        if(r.out > "18:00") return { cost: hours * hourlyRate * 1.5, multi: 'x1.5 (H.İçi Akşam)' };
+        
+        return { cost: hours * hourlyRate, multi: 'Normal' };
+    }
+
+    function renderAll() {
+        const db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
+        
+        // Personel Kartları
+        const staffDiv = document.getElementById('staffList');
+        staffDiv.innerHTML = db.users.map(u => `
             <div class="staff-card">
-                <b>${u.name}</b> (${u.unvan}) <br>
-                <span class="tag">${u.gender}</span> <span class="tag">${u.age} Yaş</span> 
-                <span class="tag">${u.edu}</span> <span class="tag">Ehliyet: ${u.licenses.join(', ')}</span>
+                <div class="staff-header"><span>${u.name} (${u.title})</span> <span>Maaş: ${u.salary} ₺</span></div>
+                <div class="staff-info">
+                    <span class="badge">${u.gender}</span> <span class="badge">${u.age} Yaş</span> 
+                    <span class="badge">${u.edu}</span> <span class="badge">Ehliyet: ${u.license}</span>
+                </div>
             </div>
         `).join('');
-    }
-    renderList();
-</script>
 
+        // Hareketler Tablosu
+        const moveDiv = document.getElementById('movementsTable');
+        let tableHtml = `<table><tr><th>Personel</th><th>Tür</th><th>Tarih</th><th>Saat</th><th>Çarpan</th><th>Hakediş</th></tr>`;
+        db.records.forEach(r => {
+            const staff = db.users.find(u => u.user === r.owner) || { hourlyRate: 0 };
+            const calc = calculateRow(r, staff.hourlyRate);
+            tableHtml += `<tr>
+                <td>${r.ownerName}</td>
+                <td>${r.type}</td>
+                <td>${r.startDate} ${r.endDate ? '- ' + r.endDate : ''}</td>
+                <td>${r.in || '-'} / ${r.out || '-'}</td>
+                <td class="multiplier">${calc.multi}</td>
+                <td>${calc.cost.toFixed(2)} ₺</td>
+            </tr>`;
+        });
+        moveDiv.innerHTML = tableHtml + `</table>`;
+    }
+
+    renderAll();
+</script>
 </body>
 </html>
