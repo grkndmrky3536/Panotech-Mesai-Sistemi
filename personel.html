@@ -156,21 +156,25 @@
         if(!loggedUser) { location.href = 'index.html'; return; }
 
         const db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
-        // En güncel verileri db'den alalım (Maaş değişikliği vb. için)
         const user = db.users.find(u => u.user === loggedUser.user);
+        
+        if(!user) { alert("Kullanıcı verisi bulunamadı!"); return; }
+
         const myRecords = db.records.filter(r => r.owner === user.user);
 
         // Profil Bilgileri
-        document.getElementById('dispName').innerText = user.name;
-        document.getElementById('dispTitle').innerText = user.title;
-        document.getElementById('dispAgeGender').innerText = `${user.age} Yaş / ${user.gender}`;
-        document.getElementById('dispEdu').innerText = user.edu;
+        document.getElementById('dispName').innerText = user.name || "-";
+        document.getElementById('dispTitle').innerText = user.title || "-";
+        document.getElementById('dispAgeGender').innerText = `${user.age || 0} Yaş / ${user.gender || "-"}`;
+        document.getElementById('dispEdu').innerText = user.edu || "-";
         document.getElementById('dispLicense').innerText = user.license || "Yok";
         document.getElementById('currentDate').innerText = new Date().toLocaleDateString('tr-TR') + " Tarihi itibariyle";
 
         // Ücret Bilgileri
-        const hRate = user.hourlyRate || 0;
-        document.getElementById('rateSalary').innerText = user.salary + " ₺";
+        const hRate = parseFloat(user.hourlyRate) || 0;
+        const salary = parseFloat(user.salary) || 0;
+        
+        document.getElementById('rateSalary').innerText = salary.toLocaleString('tr-TR') + " ₺";
         document.getElementById('rateNormal').innerText = hRate.toFixed(2) + " ₺";
         document.getElementById('rate15').innerText = (hRate * 1.5).toFixed(2) + " ₺";
         document.getElementById('rate20').innerText = (hRate * 2).toFixed(2) + " ₺";
@@ -195,7 +199,7 @@
             `;
         });
 
-        const totalPay = parseFloat(user.salary) + mesaiToplam;
+        const totalPay = salary + mesaiToplam;
         document.getElementById('grandTotal').innerText = totalPay.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + " ₺";
     }
 
@@ -211,7 +215,8 @@
         html2pdf().set(opt).from(element).save();
     }
 
-    renderPersonelData();
+    // Sayfa yüklendiğinde çalıştır
+    window.onload = renderPersonelData;
 </script>
 </body>
 </html>
