@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panotech Asansör Giriş</title>
     <style>
-        :root { 
-            --panotech-orange: #b33a1b; /* Görseldeki arka plan tonu */
-        }
+        :root { --panotech-orange: #b33a1b; }
 
         body, html {
             height: 100%;
@@ -26,21 +24,19 @@
             padding: 20px;
         }
 
-        /* Ana Başlık: Daha Büyük ve Beyaz */
         .brand-name {
             color: white;
-            font-size: 5rem; /* Boyut büyütüldü */
+            font-size: 5rem;
             font-weight: bold;
             letter-spacing: 4px;
             margin: 0;
             text-transform: uppercase;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3); /* Derinlik için hafif gölge */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        /* Alt Başlık: Daha Büyük ve Beyaz */
         .brand-sub {
             color: white;
-            font-size: 1.2rem; /* Boyut büyütüldü */
+            font-size: 1.2rem;
             letter-spacing: 2px;
             line-height: 1.6;
             margin-top: 15px;
@@ -67,9 +63,7 @@
             outline: none;
         }
 
-        input:focus {
-            border-color: var(--panotech-orange);
-        }
+        input:focus { border-color: var(--panotech-orange); }
 
         button {
             width: 100%;
@@ -90,6 +84,8 @@
             background-color: #000;
             transform: translateY(-2px);
         }
+
+        button:disabled { background-color: #999; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -104,38 +100,91 @@
     <div class="login-form">
         <input type="text" id="username" placeholder="Kullanıcı Adı">
         <input type="password" id="password" placeholder="Şifre">
-        <button onclick="handleLogin()">Sisteme Giriş Yap</button>
+        <button id="loginBtn" onclick="handleLogin()">Sisteme Giriş Yap</button>
     </div>
 </div>
 
 <script>
-    // Varsayılan yönetici hesabı
-    const users = [
-        { user: "admin", pass: "3512", role: "admin", name: "Gürkan Demirkaya" }
-    ];
+    // --- GITHUB YAPILANDIRMASI ---
+    const GITHUB_CONFIG = {
+        token: 'TOKEN_BURAYA', // GitHub Token'ını buraya yapıştır
+        owner: 'KULLANICI_ADIN_BURAYA', // GitHub kullanıcı adını buraya yaz
+        repo: 'REPO_ADIN_BURAYA', // Repo adını buraya yaz
+        path: 'data.json'
+    };
 
-    function handleLogin() {
-        const u = document.getElementById('username').value;
-        const p = document.getElementById('password').value;
+    // Varsayılan yönetici hesabı (GitHub'da veri olmasa bile giriş yapabilmen için)
+    const defaultAdmin = { 
+        user: "admin", 
+        pass: "3512", 
+        role: "admin", 
+        name: "Gürkan Demirkaya" 
+    };
 
-        // Yönetici tarafından eklenen personelleri kontrol et
-        const db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [] };
-        const allUsers = [...users, ...db.users];
+    async function handleLogin() {
+        const u = document.getElementById('username').value.trim();
+        const p = document.getElementById('password').value.trim();
+        const btn = document.getElementById('loginBtn');
 
-        const foundUser = allUsers.find(x => x.user === u && x.pass === p);
+        if(!u || !p) {
+            alert("Lütfen tüm alanları doldurun!");
+            return;
+        }
 
-        if (foundUser) {
-            sessionStorage.setItem('loggedUser', JSON.stringify(foundUser));
-            // Yetkiye göre yönlendirme
-            if (foundUser.role === 'admin') {
+        btn.disabled = true;
+        btn.innerText = "KONTROL EDİLİYOR...";
+
+        try {
+            // GitHub'dan güncel veritabanını çekiyoruz
+            const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
+            const response = await fetch(url, {
+                headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` }
+            });
+
+            if (!response.ok) throw new Error("Veri çekilemedi");
+
+            const data = await response.json();
+            const db = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+
+            // Tüm kullanıcıları birleştir (Varsayılan Admin + GitHub'daki Personeller)
+            const allUsers = [defaultAdmin, ...db.users];
+
+            const foundUser = allUsers.find(x => x.user === u && x.pass === p);
+
+            if (foundUser) {
+                // Giriş yapan kullanıcıyı oturuma kaydet
+                sessionStorage.setItem('loggedUser', JSON.stringify(foundUser));
+                
+                // Yetkiye göre yönlendir
+                if (foundUser.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'personel.html';
+                }
+            } else {
+                alert("Hatalı kullanıcı adı veya şifre!");
+            }
+        } catch (e) {
+            console.error(e);
+            // Eğer internet yoksa veya GitHub hatası varsa sadece default admin ile girişi dene
+            if (u === defaultAdmin.user && p === defaultAdmin.pass) {
+                sessionStorage.setItem('loggedUser', JSON.stringify(defaultAdmin));
                 window.location.href = 'admin.html';
             } else {
-                window.location.href = 'personel.html';
+                alert("Bağlantı hatası! Lütfen internetinizi veya GitHub ayarlarınızı kontrol edin.");
             }
-        } else {
-            alert("Hatalı kullanıcı adı veya şifre!");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "SİSTEME GİRİŞ YAP";
         }
     }
+
+    // Enter tuşu ile girişi sağla
+    document.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            handleLogin();
+        }
+    });
 </script>
 
 </body>
