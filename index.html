@@ -5,17 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panotech Asansör Giriş</title>
     <style>
-        /* Görseldeki Panotech Turuncusu ve Gri Tonları */
         :root { 
-            --panotech-orange: #b33a1b; 
-            --panotech-text-gray: #4a4a4a; 
-            --panotech-light-gray: #5e5e5e;
+            --panotech-orange: #b33a1b; /* Görseldeki arka plan tonu */
         }
 
         body, html {
             height: 100%;
             margin: 0;
-            font-family: "Times New Roman", Times, serif; /* Görseldeki font stili */
+            font-family: "Times New Roman", Times, serif;
             background-color: var(--panotech-orange);
             display: flex;
             justify-content: center;
@@ -23,119 +20,105 @@
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.05); /* Çok hafif şeffaf beyazlık */
-            padding: 50px;
             text-align: center;
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
+            padding: 20px;
         }
 
-        .logo-area {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 40px;
-        }
-
-        /* Görseldeki Panotech Yazı Fontu ve Rengi */
+        /* Ana Başlık: Daha Büyük ve Beyaz */
         .brand-name {
-            color: var(--panotech-text-gray);
-            font-size: 3.5rem;
-            font-weight: normal;
-            letter-spacing: 2px;
+            color: white;
+            font-size: 5rem; /* Boyut büyütüldü */
+            font-weight: bold;
+            letter-spacing: 4px;
             margin: 0;
             text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3); /* Derinlik için hafif gölge */
         }
 
+        /* Alt Başlık: Daha Büyük ve Beyaz */
         .brand-sub {
-            color: var(--panotech-light-gray);
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            line-height: 1.4;
-            margin-top: 10px;
+            color: white;
+            font-size: 1.2rem; /* Boyut büyütüldü */
+            letter-spacing: 2px;
+            line-height: 1.6;
+            margin-top: 15px;
             text-transform: uppercase;
+            font-weight: bold;
         }
 
         .login-form {
             background: white;
-            padding: 30px;
-            border-radius: 4px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            margin-top: 50px;
         }
 
         input {
             width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 2px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #eee;
+            border-radius: 4px;
             box-sizing: border-box;
-            font-family: serif;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--panotech-orange);
         }
 
         button {
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             border: none;
-            background-color: var(--panotech-text-gray);
+            background-color: #333;
             color: white;
             font-weight: bold;
+            font-size: 1.2rem;
             text-transform: uppercase;
             cursor: pointer;
             transition: 0.3s;
             letter-spacing: 1px;
+            border-radius: 4px;
         }
 
         button:hover {
-            background-color: #333;
-        }
-
-        /* İkon simülasyonu */
-        .logo-icon {
-            width: 50px;
-            height: 50px;
-            background: var(--panotech-orange);
-            border: 3px solid var(--panotech-text-gray);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--panotech-text-gray);
-            font-weight: bold;
-            font-size: 1.5rem;
+            background-color: #000;
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
 
 <div class="login-card">
-    <div class="logo-area">
-        <h1 class="brand-name">PANOTECH</h1>
-    </div>
+    <h1 class="brand-name">PANOTECH</h1>
     <div class="brand-sub">
         ASANSÖR KONTROL SİSTEMLERİ <br>
         SAN. ve TİC. LTD. ŞTİ.
     </div>
 
-    <div class="login-form" style="margin-top: 40px;">
+    <div class="login-form">
         <input type="text" id="username" placeholder="Kullanıcı Adı">
         <input type="password" id="password" placeholder="Şifre">
-        <button onclick="handleLogin()">Giriş Yap</button>
+        <button onclick="handleLogin()">Sisteme Giriş Yap</button>
     </div>
 </div>
 
 <script>
+    // Varsayılan yönetici hesabı
     const users = [
-        { user: "admin", pass: "1234", role: "admin", name: "Gürkan Demirkaya" }
+        { user: "admin", pass: "3512", role: "admin", name: "Gürkan Demirkaya" }
     ];
 
     function handleLogin() {
         const u = document.getElementById('username').value;
         const p = document.getElementById('password').value;
 
-        // Önce localStorage'dan personelleri kontrol et (yönetici panelinde eklediklerin için)
+        // Yönetici tarafından eklenen personelleri kontrol et
         const db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [] };
         const allUsers = [...users, ...db.users];
 
@@ -143,6 +126,7 @@
 
         if (foundUser) {
             sessionStorage.setItem('loggedUser', JSON.stringify(foundUser));
+            // Yetkiye göre yönlendirme
             if (foundUser.role === 'admin') {
                 window.location.href = 'admin.html';
             } else {
