@@ -2,147 +2,86 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>PANOTECH ADMİN - BULUT PANEL</title>
+    <title>PANOTECH - BULUT SİSTEMİ</title>
     <style>
-        :root { --primary: #b33a1b; --secondary: #6b46c1; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        h2 { color: var(--primary); display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; background: #fafafa; padding: 20px; border-radius: 10px; border: 1px solid #eee; }
-        input, select { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--secondary); box-shadow: 0 0 5px rgba(107, 70, 193, 0.2); }
-        .btn-save { background: var(--secondary); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 20px; font-size: 16px; transition: 0.3s; }
-        .btn-save:hover { background: #553c9a; transform: translateY(-2px); }
-        #status { padding: 10px; margin-bottom: 20px; border-radius: 8px; font-weight: bold; text-align: center; }
-        .status-ok { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
-        .status-err { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
-        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #f8fafc; color: #64748b; font-size: 13px; text-transform: uppercase; }
-        .license-badges { display: flex; gap: 5px; flex-wrap: wrap; }
-        .badge { background: #e2e8f0; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+        body { font-family: sans-serif; background: #f0f2f5; padding: 30px; }
+        .card { max-width: 650px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border-top: 6px solid #b33a1b; }
+        h2 { color: #b33a1b; text-align: center; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: #6b46c1; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
+        button:hover { background: #553c9a; }
+        #durum { text-align: center; font-weight: bold; padding: 10px; margin-bottom: 10px; border-radius: 6px; }
+        .ok { background: #d4edda; color: #155724; }
+        .hata { background: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="status">Bağlantı kontrol ediliyor...</div>
-    
-    <h2>👤 Personel Kayıt Formu</h2>
-    <div class="form-grid">
-        <input type="text" id="name" placeholder="Ad Soyad">
-        <input type="text" id="user" placeholder="Kullanıcı Adı">
-        <input type="password" id="pass" placeholder="Şifre">
-        <input type="number" id="salary" placeholder="Net Maaş (TL)">
-        <select id="title">
-            <option value="">Ünvan Seçin</option>
-            <option>Usta Başı</option>
-            <option>Teknik Destek</option>
-            <option>Montaj Personeli</option>
-            <option>Ofis Personeli</option>
-        </select>
-        <select id="edu">
-            <option value="">Eğitim Durumu</option>
-            <option>Lise</option><option>Üniversite</option>
-        </select>
-        <div style="grid-column: 1 / -1; display: flex; gap: 20px; align-items: center; border-top: 1px solid #eee; pt: 10px;">
-            <strong>Ehliyetler:</strong>
-            <label><input type="checkbox" value="B" class="lic"> B</label>
-            <label><input type="checkbox" value="BE" class="lic"> BE</label>
-            <label><input type="checkbox" value="C" class="lic"> C</label>
-            <label><input type="checkbox" value="G" class="lic"> G</label>
-        </div>
-    </div>
-    <button class="btn-save" onclick="saveToCloud()">BULUTA GÜVENLE KAYDET</button>
-
-    <h2>📋 Kayıtlı Personel Listesi</h2>
-    <table id="userTable">
-        <thead>
-            <tr>
-                <th>Ad Soyad</th>
-                <th>Ünvan</th>
-                <th>Maaş</th>
-                <th>Ehliyet</th>
-                <th>İşlem</th>
-            </tr>
-        </thead>
-        <tbody id="userBody"></tbody>
-    </table>
+<div class="card">
+    <div id="durum">Bağlantı Kuruluyor...</div>
+    <h2>🛠 PANOTECH PERSONEL KAYIT</h2>
+    <input type="text" id="ad" placeholder="Ad Soyad">
+    <input type="text" id="user" placeholder="Kullanıcı Adı">
+    <input type="password" id="pass" placeholder="Şifre">
+    <input type="number" id="maas" placeholder="Net Maaş (TL)">
+    <select id="unvan">
+        <option value="">Ünvan Seçin</option>
+        <option>Usta Başı</option>
+        <option>Teknik Destek</option>
+        <option>Montaj Personeli</option>
+    </select>
+    <button onclick="kaydet()">BULUTA GÖNDER</button>
 </div>
 
 <script>
-    const GITHUB_CONFIG = {
+    const AYAR = {
         token: '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',
-        owner: 'grkndmrky3536',
-        repo: 'panotech-data',
-        path: 'data.json'
+        sahip: 'grkndmrky3536',
+        depo: 'panotech-data'
     };
 
-    async function loadData() {
-        const statusDiv = document.getElementById('status');
+    async function baglantiyiKontrolEt() {
+        const d = document.getElementById('durum');
         try {
-            const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
-            const res = await fetch(url, { headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` } });
-            if(!res.ok) throw new Error();
-            const data = await res.json();
-            const content = JSON.parse(atob(data.content));
-            renderUsers(content.users);
-            statusDiv.innerText = "✅ Bulut Bağlantısı Aktif - Veriler Panotech Güvencesinde";
-            statusDiv.className = "status-ok";
-            return { content, sha: data.sha };
+            const r = await fetch(`https://api.github.com/repos/${AYAR.sahip}/${AYAR.depo}/contents/data.json`, {
+                headers: { 'Authorization': `token ${AYAR.token}` }
+            });
+            if(!r.ok) throw new Error();
+            const json = await r.json();
+            d.innerText = "✅ BAĞLANTI AKTİF"; d.className = "ok";
+            return { icerik: JSON.parse(atob(json.content)), sha: json.sha };
         } catch (e) {
-            statusDiv.innerText = "❌ Bağlantı Kurulamadı! GitHub'da data.json dosyası olduğundan emin olun.";
-            statusDiv.className = "status-err";
+            d.innerText = "❌ BAĞLANTI HATASI!"; d.className = "hata";
         }
     }
 
-    function renderUsers(users) {
-        document.getElementById('userBody').innerHTML = users.map(u => `
-            <tr>
-                <td><strong>${u.name}</strong><br><small>${u.user}</small></td>
-                <td>${u.title}</td>
-                <td>${u.salary} ₺</td>
-                <td><div class="license-badges">${u.license.split(',').map(l => `<span class="badge">${l}</span>`).join('')}</div></td>
-                <td><button style="color:red; cursor:pointer;" onclick="deleteUser('${u.user}')">Kaldır</button></td>
-            </tr>
-        `).join('');
-    }
+    async function kaydet() {
+        const veri = await baglantiyiKontrolEt();
+        if(!veri) return;
 
-    async function saveToCloud() {
-        const res = await loadData();
-        if(!res) return;
-        const { content, sha } = res;
-        
-        const licenses = Array.from(document.querySelectorAll('.lic:checked')).map(c => c.value);
-        const newUser = {
-            name: document.getElementById('name').value,
+        const yeni = {
+            name: document.getElementById('ad').value,
             user: document.getElementById('user').value,
             pass: document.getElementById('pass').value,
-            salary: document.getElementById('salary').value,
-            title: document.getElementById('title').value,
-            license: licenses.join(',') || '-'
+            salary: document.getElementById('maas').value,
+            title: document.getElementById('unvan').value
         };
 
-        content.users.push(newUser);
-        await updateGitHub(content, sha);
-        alert("Personel başarıyla buluta gönderildi!");
-        loadData();
-    }
+        veri.icerik.users.push(yeni);
 
-    async function updateGitHub(content, sha) {
-        const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
-        await fetch(url, {
+        const r = await fetch(`https://api.github.com/repos/${AYAR.sahip}/${AYAR.depo}/contents/data.json`, {
             method: 'PUT',
-            headers: { 'Authorization': `token ${GITHUB_CONFIG.token}`, 'Content-Type': 'application/json' },
+            headers: { 'Authorization': `token ${AYAR.token}` },
             body: JSON.stringify({
-                message: "Update",
-                content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))),
-                sha: sha
+                message: "yeni personel",
+                content: btoa(unescape(encodeURIComponent(JSON.stringify(veri.icerik, null, 2)))),
+                sha: veri.sha
             })
         });
-    }
 
-    window.onload = loadData;
+        if(r.ok) alert("Personel Buluta Kaydedildi!");
+    }
+    window.onload = baglantiyiKontrolEt;
 </script>
 </body>
 </html>
