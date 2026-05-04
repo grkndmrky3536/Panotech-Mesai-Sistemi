@@ -2,190 +2,56 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panotech Asansör Giriş</title>
+    <title>PANOTECH - GİRİŞ</title>
     <style>
-        :root { --panotech-orange: #b33a1b; }
-
-        body, html {
-            height: 100%;
-            margin: 0;
-            font-family: "Times New Roman", Times, serif;
-            background-color: var(--panotech-orange);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .login-card {
-            text-align: center;
-            width: 100%;
-            max-width: 600px;
-            padding: 20px;
-        }
-
-        .brand-name {
-            color: white;
-            font-size: 5rem;
-            font-weight: bold;
-            letter-spacing: 4px;
-            margin: 0;
-            text-transform: uppercase;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .brand-sub {
-            color: white;
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            line-height: 1.6;
-            margin-top: 15px;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        .login-form {
-            background: white;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            margin-top: 50px;
-        }
-
-        input {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 20px;
-            border: 2px solid #eee;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 1.1rem;
-            outline: none;
-        }
-
-        input:focus { border-color: var(--panotech-orange); }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            background-color: #333;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: 0.3s;
-            letter-spacing: 1px;
-            border-radius: 4px;
-        }
-
-        button:hover {
-            background-color: #000;
-            transform: translateY(-2px);
-        }
-
-        button:disabled { background-color: #999; cursor: not-allowed; }
+        body { background: #2d3748; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; }
+        .login-card { background: white; padding: 40px; border-radius: 10px; width: 300px; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #b33a1b; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
-
 <div class="login-card">
-    <h1 class="brand-name">PANOTECH</h1>
-    <div class="brand-sub">
-        ASANSÖR KONTROL SİSTEMLERİ <br>
-        SAN. ve TİC. LTD. ŞTİ.
-    </div>
-
-    <div class="login-form">
-        <input type="text" id="username" placeholder="Kullanıcı Adı">
-        <input type="password" id="password" placeholder="Şifre">
-        <button id="loginBtn" onclick="handleLogin()">Sisteme Giriş Yap</button>
-    </div>
+    <h2 style="color:#b33a1b">PANOTECH</h2>
+    <input type="text" id="u" placeholder="Kullanıcı Adı">
+    <input type="password" id="p" placeholder="Şifre">
+    <button onclick="login()">GİRİŞ YAP</button>
 </div>
 
 <script>
-    // --- GITHUB YAPILANDIRMASI ---
     const GITHUB_CONFIG = {
-        token: 'TOKEN_BURAYA', // GitHub Token'ını buraya yapıştır
-        owner: 'KULLANICI_ADIN_BURAYA', // GitHub kullanıcı adını buraya yaz
-        repo: 'REPO_ADIN_BURAYA', // Repo adını buraya yaz
+        token: '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',
+        owner: 'grkndmrky3536',
+        repo: 'panotech-data',
         path: 'data.json'
     };
 
-    // Varsayılan yönetici hesabı (GitHub'da veri olmasa bile giriş yapabilmen için)
-    const defaultAdmin = { 
-        user: "admin", 
-        pass: "3512", 
-        role: "admin", 
-        name: "Gürkan Demirkaya" 
-    };
+    async function login() {
+        const u = document.getElementById('u').value;
+        const p = document.getElementById('p').value;
 
-    async function handleLogin() {
-        const u = document.getElementById('username').value.trim();
-        const p = document.getElementById('password').value.trim();
-        const btn = document.getElementById('loginBtn');
-
-        if(!u || !p) {
-            alert("Lütfen tüm alanları doldurun!");
+        if(u === 'admin' && p === '3512') {
+            location.href = 'admin.html';
             return;
         }
 
-        btn.disabled = true;
-        btn.innerText = "KONTROL EDİLİYOR...";
-
         try {
-            // GitHub'dan güncel veritabanını çekiyoruz
             const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
-            const response = await fetch(url, {
-                headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` }
-            });
+            const res = await fetch(url, { headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` } });
+            const data = await res.json();
+            const db = JSON.parse(atob(data.content));
 
-            if (!response.ok) throw new Error("Veri çekilemedi");
-
-            const data = await response.json();
-            const db = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-
-            // Tüm kullanıcıları birleştir (Varsayılan Admin + GitHub'daki Personeller)
-            const allUsers = [defaultAdmin, ...db.users];
-
-            const foundUser = allUsers.find(x => x.user === u && x.pass === p);
-
-            if (foundUser) {
-                // Giriş yapan kullanıcıyı oturuma kaydet
-                sessionStorage.setItem('loggedUser', JSON.stringify(foundUser));
-                
-                // Yetkiye göre yönlendir
-                if (foundUser.role === 'admin') {
-                    window.location.href = 'admin.html';
-                } else {
-                    window.location.href = 'personel.html';
-                }
+            const user = db.users.find(x => x.user === u && x.pass === p);
+            if(user) {
+                sessionStorage.setItem('loggedUser', JSON.stringify(user));
+                location.href = 'personel.html';
             } else {
-                alert("Hatalı kullanıcı adı veya şifre!");
+                alert("Hatalı kullanıcı veya şifre!");
             }
         } catch (e) {
-            console.error(e);
-            // Eğer internet yoksa veya GitHub hatası varsa sadece default admin ile girişi dene
-            if (u === defaultAdmin.user && p === defaultAdmin.pass) {
-                sessionStorage.setItem('loggedUser', JSON.stringify(defaultAdmin));
-                window.location.href = 'admin.html';
-            } else {
-                alert("Bağlantı hatası! Lütfen internetinizi veya GitHub ayarlarınızı kontrol edin.");
-            }
-        } finally {
-            btn.disabled = false;
-            btn.innerText = "SİSTEME GİRİŞ YAP";
+            alert("Bağlantı hatası!");
         }
     }
-
-    // Enter tuşu ile girişi sağla
-    document.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            handleLogin();
-        }
-    });
 </script>
-
 </body>
 </html>
