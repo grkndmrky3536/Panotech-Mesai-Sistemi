@@ -3,191 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PANOTECH | Personel Yönetim Sistemi</title>
+    <title>PANOTECH YÖNETİCİ</title>
     <style>
-        :root { --panotech-red: #b33a1b; --dark: #2d3748; --accent: #6b46c1; --bg: #f7fafc; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--dark); }
-        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 8px solid var(--panotech-red); }
+        body { font-family: sans-serif; background-color: #f4f7f9; margin: 0; padding: 0; }
+        .header { background: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #b33a1b; }
+        .header h1 { color: #b33a1b; font-size: 1.2rem; margin: 0; text-transform: uppercase; }
         
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #edf2f7; margin-bottom: 25px; padding-bottom: 15px; }
-        h2 { color: var(--panotech-red); margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
+        .main-container { max-width: 1000px; margin: 30px auto; background: white; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 25px; }
         
-        #status-indicator { padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 13px; }
-        .online { background: #dcfce7; color: #166534; }
-        .offline { background: #fee2e2; color: #991b1b; }
+        .section-title { color: #6b46c1; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        
+        .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
+        .full-width { grid-column: span 2; }
+        
+        .btn-delete { background: #e53e3e; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: 0.3s; font-weight: bold; }
+        .btn-delete:hover { background: #c53030; transform: scale(1.05); }
 
-        .form-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; }
-        input, select { padding: 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 14px; outline: none; transition: all 0.3s; }
-        input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.1); }
+        input, select { padding: 10px; border: 1px solid #ddd; border-radius: 5px; width: 100%; box-sizing: border-box; }
         
-        .checkbox-group { grid-column: 1 / -1; display: flex; gap: 15px; align-items: center; padding: 10px; border-top: 1px solid #e2e8f0; margin-top: 5px; }
-        .checkbox-group label { display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 14px; font-weight: 600; }
-
-        .btn-submit { grid-column: 1 / -1; background: var(--accent); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; transition: 0.3s; }
-        .btn-submit:hover { background: #553c9a; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(107, 70, 193, 0.3); }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 30px; border-radius: 10px; overflow: hidden; }
-        th { background: #edf2f7; padding: 15px; text-align: left; color: #4a5568; font-size: 13px; text-transform: uppercase; }
-        td { padding: 15px; border-bottom: 1px solid #edf2f7; font-size: 15px; }
-        tr:hover { background: #fdfdfd; }
+        .license-area { background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .license-grid { display: flex; gap: 20px; font-size: 0.9rem; }
         
-        .badge { background: #e2e8f0; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-right: 4px; }
-        .delete-btn { color: #e53e3e; cursor: pointer; border: none; background: none; font-weight: bold; }
-        .delete-btn:hover { text-decoration: underline; }
+        .btn-submit { background: #6b46c1; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .btn-submit:hover { background: #553c9a; }
+
+        .staff-card { background: #fff5f5; border-radius: 8px; padding: 15px; margin-bottom: 10px; border-left: 5px solid #6b46c1; }
+        .staff-header { display: flex; justify-content: space-between; align-items: flex-start; font-weight: bold; margin-bottom: 8px; }
+        .staff-info { display: flex; gap: 10px; flex-wrap: wrap; }
+        .badge { background: #e2e8f0; padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; color: #4a5568; }
+        
+        .rate-box { text-align: right; font-size: 0.85rem; }
+        .rate-line { color: #4a5568; margin-bottom: 2px; }
+        .rate-val { font-weight: bold; color: #6b46c1; }
+        .rate-sunday { font-weight: bold; color: #b33a1b; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
+        th { text-align: left; background: #6b46c1; color: white; padding: 10px; }
+        td { padding: 10px; border-bottom: 1px solid #eee; }
+        .multiplier { font-weight: bold; color: #b33a1b; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h2>🛠 PANOTECH ADMİN PANELİ</h2>
-        <div id="status-indicator" class="offline">BULUT BAĞLANTISI YOK</div>
-    </div>
+<div class="header">
+    <h1>PANOTECH YÖNETİCİ</h1>
+    <button onclick="location.href='index.html'" style="cursor:pointer; background:white; border:1px solid #ddd; padding:5px 15px; border-radius:4px;">Güvenli Çıkış</button>
+</div>
 
-    <div class="form-section">
-        <input type="text" id="name" placeholder="Ad Soyad">
-        <input type="text" id="user" placeholder="Kullanıcı Adı">
-        <input type="password" id="pass" placeholder="Şifre">
-        <input type="number" id="salary" placeholder="Net Maaş (TL)">
-        
-        <select id="title">
+<div class="main-container">
+    <div class="section-title">👤 PERSONEL KAYIT FORMU</div>
+    <div class="form-grid">
+        <input type="text" id="pName" placeholder="Ad Soyad">
+        <input type="text" id="pUser" placeholder="Kullanıcı Adı">
+        <input type="password" id="pPass" placeholder="Şifre">
+        <input type="number" id="pSalary" placeholder="Net Maaş (TL)">
+    </div>
+    <div class="form-grid">
+        <select id="pGender"><option>Cinsiyet</option><option>Erkek</option><option>Kadın</option></select>
+        <input type="number" id="pAge" placeholder="Yaş">
+        <select id="pEdu" class="full-width"><option>Eğitim Durumu</option><option>Lise</option><option>Önlisans</option><option>Lisans</option></select>
+        <select id="pTitle" class="full-width">
             <option value="">Ünvan Seçin</option>
-            <option>Usta Başı</option>
-            <option>Teknik Destek</option>
-            <option>Montaj Personeli</option>
-            <option>Ofis Personeli</option>
-            <option>Stajyer</option>
+            <option value="TEKNİK DESTEK ELAMANI">TEKNİK DESTEK ELAMANI</option>
+            <option value="PANO MONTAJ USTASI">PANO MONTAJ USTASI</option>
         </select>
-        
-        <select id="edu">
-            <option value="">Eğitim Durumu</option>
-            <option>İlkokul</option>
-            <option>Ortaokul</option>
-            <option>Lise</option>
-            <option>Üniversite</option>
-        </select>
-
-        <div class="checkbox-group">
-            <span style="font-weight: bold; color: #4a5568;">Ehliyetler:</span>
-            <label><input type="checkbox" value="B" class="lic"> B</label>
-            <label><input type="checkbox" value="BE" class="lic"> BE</label>
-            <label><input type="checkbox" value="C" class="lic"> C</label>
-            <label><input type="checkbox" value="D" class="lic"> D</label>
-            <label><input type="checkbox" value="G" class="lic"> G (Forklift/Beko)</label>
-        </div>
-
-        <button class="btn-submit" onclick="saveToCloud()">PERSONELİ SİSTEME VE BULUTA KAYDET</button>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Personel Bilgisi</th>
-                <th>Ünvan</th>
-                <th>Net Maaş</th>
-                <th>Belgeler</th>
-                <th>İşlem</th>
-            </tr>
-        </thead>
-        <tbody id="userList">
-            <!-- Veriler Buraya Gelecek -->
-        </tbody>
-    </table>
+    <div class="license-area">
+        <strong>SÜRÜCÜ BELGELERİ:</strong>
+        <div class="license-grid" style="margin-top:10px;">
+            <label><input type="checkbox" name="lic" value="B"> B</label>
+            <label><input type="checkbox" name="lic" value="BE"> BE</label>
+            <label><input type="checkbox" name="lic" value="C"> C</label>
+            <label><input type="checkbox" name="lic" value="D"> D</label>
+            <label><input type="checkbox" name="lic" value="G"> G (İş Makinası)</label>
+        </div>
+    </div>
+    <button class="btn-submit" onclick="saveStaff()">PERSONELİ SİSTEME TANIMLA</button>
+
+    <div class="section-title" style="margin-top:40px;">📋 KAYITLI PERSONEL LİSTESİ</div>
+    <div id="staffList"></div>
+
+    <div class="section-title" style="margin-top:40px;">📊 MESAİ VE İZİN HAREKETLERİ</div>
+    <div id="movementsTable"></div>
 </div>
 
 <script>
-    // Gürkan, buradaki tokeni yeni aldığın çalışan token ile değiştir
-    const GITHUB_CONFIG = {
-        token: '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',
-        owner: 'grkndmrky3536',
-        repo: 'panotech-data',
-        path: 'data.json'
-    };
+    // 2026 TÜRKİYE RESMİ TATİL LİSTESİ
+    const resmiTatiller2026 = [
+        "2026-01-01", // Yılbaşı
+        "2026-04-23", // Ulusal Egemenlik ve Çocuk Bayramı
+        "2026-05-01", // Emek ve Dayanışma Günü
+        "2026-05-19", // Atatürk'ü Anma, Gençlik ve Spor Bayramı
+        "2026-07-15", // Demokrasi ve Milli Birlik Günü
+        "2026-08-30", // Zafer Bayramı
+        "2026-10-29", // Cumhuriyet Bayramı
+        // Dini Bayramlar
+        "2026-03-20", "2026-03-21", "2026-03-22", // Ramazan Bayramı
+        "2026-05-27", "2026-05-28", "2026-05-29", "2026-05-30" // Kurban Bayramı
+    ];
 
-    async function fetchData() {
-        const status = document.getElementById('status-indicator');
-        try {
-            const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
-            const response = await fetch(url, {
-                headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` }
-            });
-            
-            if (!response.ok) throw new Error("Bağlantı Başarısız");
-            
-            const data = await response.json();
-            const content = JSON.parse(atob(data.content));
-            
-            status.innerText = "✅ BULUT BAĞLANTISI AKTİF";
-            status.className = "online";
-            
-            renderTable(content.users);
-            return { content, sha: data.sha };
-        } catch (error) {
-            status.innerText = "❌ BAĞLANTI HATASI (TOKEN VEYA DOSYA)";
-            status.className = "offline";
-            console.error(error);
-        }
-    }
+    function saveStaff() {
+        const uVal = document.getElementById('pUser').value.trim();
+        if(!uVal) { alert("Lütfen kullanıcı adı girin!"); return; }
 
-    function renderTable(users) {
-        const tbody = document.getElementById('userList');
-        tbody.innerHTML = users.map(u => `
-            <tr>
-                <td><strong>${u.name}</strong><br><small style="color:gray">${u.user}</small></td>
-                <td><span class="badge" style="background:#fef3c7; color:#92400e">${u.title}</span></td>
-                <td><strong>${u.salary} ₺</strong></td>
-                <td>${u.license ? u.license.split(',').map(l => `<span class="badge">${l}</span>`).join('') : '-'}</td>
-                <td><button class="delete-btn" onclick="deleteUser('${u.user}')">SİL</button></td>
-            </tr>
-        `).join('');
-    }
-
-    async function saveToCloud() {
-        const db = await fetchData();
-        if (!db) return;
-
-        const licenses = Array.from(document.querySelectorAll('.lic:checked')).map(c => c.value);
+        const salary = parseFloat(document.getElementById('pSalary').value) || 0;
+        const licenses = Array.from(document.querySelectorAll('input[name="lic"]:checked')).map(c => c.value);
         
-        const newUser = {
-            name: document.getElementById('name').value,
-            user: document.getElementById('user').value,
-            pass: document.getElementById('pass').value,
-            salary: document.getElementById('salary').value,
-            title: document.getElementById('title').value,
-            edu: document.getElementById('edu').value,
-            license: licenses.join(',')
+        const newStaff = {
+            name: document.getElementById('pName').value,
+            user: uVal,
+            pass: document.getElementById('pPass').value,
+            salary: salary,
+            hourlyRate: salary / 225, 
+            gender: document.getElementById('pGender').value,
+            age: document.getElementById('pAge').value,
+            edu: document.getElementById('pEdu').value,
+            title: document.getElementById('pTitle').value,
+            license: licenses.join(', '),
+            role: 'personel'
         };
 
-        if (!newUser.name || !newUser.user || !newUser.pass) {
-            alert("Lütfen temel bilgileri (Ad, Kullanıcı, Şifre) boş bırakmayın!");
-            return;
-        }
+        let db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
+        db.users.push(newStaff);
+        localStorage.setItem('panotech_db', JSON.stringify(db));
+        location.reload();
+    }
 
-        db.content.users.push(newUser);
-
-        const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
-        const updateRes = await fetch(url, {
-            method: 'PUT',
-            headers: { 
-                'Authorization': `token ${GITHUB_CONFIG.token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: "Yeni personel eklendi: " + newUser.name,
-                content: btoa(unescape(encodeURIComponent(JSON.stringify(db.content, null, 2)))),
-                sha: db.sha
-            })
-        });
-
-        if (updateRes.ok) {
-            alert("Personel başarıyla buluta gönderildi!");
-            location.reload();
-        } else {
-            alert("Kayıt sırasında bir hata oluştu!");
+    function deleteStaff(username) {
+        if(confirm(username + " kullanıcısını silmek istediğinize emin misiniz?")) {
+            let db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
+            db.users = db.users.filter(u => u.user !== username);
+            db.records = db.records.filter(r => r.owner !== username);
+            localStorage.setItem('panotech_db', JSON.stringify(db));
+            renderAll(); 
         }
     }
 
-    window.onload = fetchData;
+    function calculateRow(r, hourlyRate) {
+        if(r.type === 'İzin') return { cost: 0, multi: 'İzinli', label: 'İzin' };
+        
+        const dateStr = r.startDate;
+        const date = new Date(dateStr);
+        const day = date.getDay(); 
+        const start = new Date(`${dateStr}T${r.in}`);
+        const end = new Date(`${dateStr}T${r.out}`);
+        const hours = (end - start) / (1000 * 60 * 60);
+
+        // 1. ÖNCELİK: RESMİ TATİL KONTROLÜ
+        if(resmiTatiller2026.includes(dateStr)) {
+            return { cost: hours * hourlyRate * 2, multi: 'x2.0', label: 'Resmi Tatil (%100)' };
+        }
+
+        // 2. ÖNCELİK: PAZAR GÜNÜ
+        if(day === 0) {
+            return { cost: hours * hourlyRate * 2, multi: 'x2.0', label: 'Pazar (%100)' };
+        }
+        
+        // 3. ÖNCELİK: CUMARTESİ VEYA HAFTA İÇİ AKŞAM
+        if(day === 6 || r.in >= "18:00") {
+            let sebep = day === 6 ? "Cumartesi" : "Akşam Mesaisi";
+            return { cost: hours * hourlyRate * 1.5, multi: 'x1.5', label: sebep + ' (%50)' };
+        }
+        
+        return { cost: hours * hourlyRate, multi: 'x1.0', label: 'Normal' };
+    }
+
+    function renderAll() {
+        const db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
+        const staffDiv = document.getElementById('staffList');
+        
+        staffDiv.innerHTML = "";
+
+        db.users.forEach(u => {
+            const card = document.createElement('div');
+            card.className = 'staff-card';
+            
+            const mesai15 = (u.hourlyRate * 1.5).toFixed(2);
+            const mesai20 = (u.hourlyRate * 2.0).toFixed(2);
+
+            card.innerHTML = `
+                <div class="staff-header">
+                    <div>
+                        <div style="font-size:1.1rem;">${u.name}</div>
+                        <div style="font-size:0.8rem; color:#666;">${u.title}</div>
+                    </div>
+                    <div class="rate-box">
+                        <div class="rate-line">Net Maaş: <b>${u.salary} ₺</b></div>
+                        <div class="rate-line">Mesai (%50): <span class="rate-val">${mesai15} ₺/Sa</span></div>
+                        <div class="rate-line">Pazar/Tatil (%100): <span class="rate-sunday">${mesai20} ₺/Sa</span></div>
+                        <button class="btn-delete" style="margin-top:8px;">PERSONELİ SİL</button>
+                    </div>
+                </div>
+                <div class="staff-info">
+                    <span class="badge">${u.gender}</span> <span class="badge">${u.age} Yaş</span> 
+                    <span class="badge">${u.edu}</span> <span class="badge">Ehliyet: ${u.license}</span>
+                </div>
+            `;
+            
+            card.querySelector('.btn-delete').onclick = () => deleteStaff(u.user);
+            staffDiv.appendChild(card);
+        });
+
+        const moveDiv = document.getElementById('movementsTable');
+        let tableHtml = `<table><tr><th>Personel</th><th>Tür</th><th>Tarih</th><th>Saat Aralığı</th><th>Çarpan</th><th>Hakediş</th></tr>`;
+        
+        db.records.forEach(r => {
+            const staff = db.users.find(u => u.user === r.owner) || { hourlyRate: 0 };
+            const calc = calculateRow(r, staff.hourlyRate);
+            tableHtml += `<tr>
+                <td>${r.ownerName}</td>
+                <td>${r.type}</td>
+                <td>${r.startDate}</td>
+                <td>${r.in || '-'} / ${r.out || '-'}</td>
+                <td class="multiplier" title="${calc.label}">${calc.multi} <small>(${calc.label})</small></td>
+                <td style="font-weight:bold;">${calc.cost.toFixed(2)} ₺</td>
+            </tr>`;
+        });
+        moveDiv.innerHTML = tableHtml + `</table>`;
+    }
+
+    renderAll();
 </script>
 </body>
 </html>
