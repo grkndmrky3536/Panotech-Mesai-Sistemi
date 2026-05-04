@@ -16,7 +16,6 @@
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
         .full-width { grid-column: span 2; }
         
-        /* Silme Butonu Stili */
         .btn-delete {
             background: #e53e3e;
             color: white;
@@ -41,13 +40,11 @@
         .btn-submit { background: #6b46c1; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         .btn-submit:hover { background: #553c9a; }
 
-        /* Personel Kartı Tasarımı */
         .staff-card { background: #fff5f5; border-radius: 8px; padding: 15px; margin-bottom: 10px; border-left: 5px solid #6b46c1; }
         .staff-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; margin-bottom: 8px; }
         .staff-info { display: flex; gap: 10px; flex-wrap: wrap; }
         .badge { background: #e2e8f0; padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; color: #4a5568; }
         
-        /* Mesai/İzin Tablosu */
         table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
         th { text-align: left; background: #6b46c1; color: white; padding: 10px; }
         td { padding: 10px; border-bottom: 1px solid #eee; }
@@ -62,7 +59,6 @@
 </div>
 
 <div class="main-container">
-    <!-- PERSONEL KAYIT FORMU -->
     <div class="section-title">👤 PERSONEL KAYIT FORMU</div>
     <div class="form-grid">
         <input type="text" id="pName" placeholder="Ad Soyad">
@@ -93,24 +89,24 @@
     </div>
     <button class="btn-submit" onclick="saveStaff()">PERSONELİ SİSTEME TANIMLA</button>
 
-    <!-- KAYITLI PERSONEL LİSTESİ -->
     <div class="section-title" style="margin-top:40px;">📋 KAYITLI PERSONEL LİSTESİ</div>
     <div id="staffList"></div>
 
-    <!-- MESAİ VE İZİN TAKİBİ -->
     <div class="section-title" style="margin-top:40px;">📊 MESAİ VE İZİN HAREKETLERİ</div>
     <div id="movementsTable"></div>
 </div>
 
 <script>
-    // PERSONEL KAYDETME
     function saveStaff() {
+        const uVal = document.getElementById('pUser').value.trim();
+        if(!uVal) { alert("Lütfen kullanıcı adı girin!"); return; }
+
         const salary = document.getElementById('pSalary').value;
         const licenses = Array.from(document.querySelectorAll('input[name="lic"]:checked')).map(c => c.value);
         
         const newStaff = {
             name: document.getElementById('pName').value,
-            user: document.getElementById('pUser').value,
+            user: uVal,
             pass: document.getElementById('pPass').value,
             salary: parseFloat(salary) || 0,
             hourlyRate: (parseFloat(salary) || 0) / 225,
@@ -128,27 +124,26 @@
         location.reload();
     }
 
-    // PERSONEL SİLME FONKSİYONU
     function deleteStaff(username) {
-        if(confirm(username + " kullanıcısını ve tüm mesai kayıtlarını silmek istediğinize emin misiniz?")) {
+        // Konsolda hangi ismin geldiğini görmek için
+        console.log("Silinmeye çalışılan:", username);
+        
+        if(confirm(username + " kullanıcısını silmek istediğinize emin misiniz?")) {
             let db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
             
-            // Kullanıcıyı sil
+            // Filtreleme yaparken hem kullanıcı adını kontrol et hem de boşlukları temizle
             db.users = db.users.filter(u => u.user !== username);
-            // Kullanıcıya ait hareketleri sil
             db.records = db.records.filter(r => r.owner !== username);
             
             localStorage.setItem('panotech_db', JSON.stringify(db));
-            renderAll(); // Sayfayı yenile
+            renderAll(); 
         }
     }
 
-    // MESAİ HESAPLAMA MANTIĞI
     function calculateRow(r, hourlyRate) {
         if(r.type === 'İzin') return { cost: 0, multi: 'İzinli' };
-        
         const date = new Date(r.startDate);
-        const day = date.getDay(); // 0: Pazar, 6: Cumartesi
+        const day = date.getDay();
         const start = new Date(`${r.startDate}T${r.in}`);
         const end = new Date(`${r.startDate}T${r.out}`);
         const hours = (end - start) / (1000 * 60 * 60);
@@ -160,29 +155,35 @@
         return { cost: hours * hourlyRate, multi: 'Normal' };
     }
 
-    // TÜMÜNÜ LİSTELEME
     function renderAll() {
         const db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
-        
-        // Personel Kartları (SİL BUTONU EKLENDİ)
         const staffDiv = document.getElementById('staffList');
-        staffDiv.innerHTML = db.users.map(u => `
-            <div class="staff-card">
+        
+        staffDiv.innerHTML = ""; // İçeriği temizle
+
+        db.users.forEach(u => {
+            const card = document.createElement('div');
+            card.className = 'staff-card';
+            // onclick olayını dinamik olarak ekleyerek tırnak işareti hatalarını engelliyoruz
+            card.innerHTML = `
                 <div class="staff-header">
                     <span>${u.name} (${u.title})</span> 
                     <div style="display:flex; align-items:center; gap:15px;">
                         <span>Maaş: ${u.salary} ₺</span>
-                        <button class="btn-delete" onclick="deleteStaff('${u.user}')">SİL</button>
+                        <button class="btn-delete">SİL</button>
                     </div>
                 </div>
                 <div class="staff-info">
                     <span class="badge">${u.gender}</span> <span class="badge">${u.age} Yaş</span> 
                     <span class="badge">${u.edu}</span> <span class="badge">Ehliyet: ${u.license}</span>
                 </div>
-            </div>
-        `).join('');
+            `;
+            
+            // Butona tıklama özelliğini burada güvenli şekilde bağlıyoruz
+            card.querySelector('.btn-delete').onclick = () => deleteStaff(u.user);
+            staffDiv.appendChild(card);
+        });
 
-        // Hareketler Tablosu
         const moveDiv = document.getElementById('movementsTable');
         let tableHtml = `<table><tr><th>Personel</th><th>Tür</th><th>Tarih</th><th>Saat</th><th>Çarpan</th><th>Hakediş</th></tr>`;
         db.records.forEach(r => {
