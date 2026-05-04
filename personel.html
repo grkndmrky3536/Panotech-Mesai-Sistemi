@@ -34,6 +34,7 @@
         .btn-pdf { background: #2d3748; color: white; }
         .btn-pdf:hover { background: #1a202c; }
         .btn-logout { background: #e53e3e; color: white; }
+        .loader { text-align: center; padding: 50px; font-weight: bold; color: #6b46c1; }
     </style>
 </head>
 <body>
@@ -44,83 +45,94 @@
 </div>
 
 <div class="action-buttons">
-    <button class="btn btn-pdf" onclick="downloadPDF()">📄 EKSTREYİ PDF OLARAK İNDİR</button>
+    <button class="btn btn-pdf" id="pdfBtn" onclick="downloadPDF()">📄 EKSTREYİ PDF OLARAK İNDİR</button>
 </div>
 
 <div id="pdf-content">
-    <div style="text-align: center; margin-bottom: 30px;">
-        <h2 style="color: #b33a1b; margin: 0;">PERSONEL MAAŞ VE MESAİ EKSTRESİ</h2>
-        <p id="currentDate" style="color: #718096; font-size: 0.9rem;"></p>
-    </div>
+    <div id="loadingMsg" class="loader">Bulut verileri yükleniyor, lütfen bekleyin...</div>
+    <div id="mainDisplay" style="display:none;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="color: #b33a1b; margin: 0;">PERSONEL MAAŞ VE MESAİ EKSTRESİ</h2>
+            <p id="currentDate" style="color: #718096; font-size: 0.9rem;"></p>
+        </div>
 
-    <div class="profile-section">
-        <div>
-            <div class="info-group">
-                <span class="label">Ad Soyad</span>
-                <span class="value" id="dispName">-</span>
+        <div class="profile-section">
+            <div>
+                <div class="info-group">
+                    <span class="label">Ad Soyad</span>
+                    <span class="value" id="dispName">-</span>
+                </div>
+                <div class="info-group">
+                    <span class="label">Ünvan</span>
+                    <span class="value" id="dispTitle">-</span>
+                </div>
+                <div class="info-group">
+                    <span class="label">Ehliyet Bilgisi</span>
+                    <span class="value" id="dispLicense">-</span>
+                </div>
             </div>
-            <div class="info-group">
-                <span class="label">Ünvan</span>
-                <span class="value" id="dispTitle">-</span>
-            </div>
-            <div class="info-group">
-                <span class="label">Ehliyet Bilgisi</span>
-                <span class="value" id="dispLicense">-</span>
+            <div>
+                <div class="info-group">
+                    <span class="label">Yaş / Cinsiyet</span>
+                    <span class="value" id="dispAgeGender">-</span>
+                </div>
+                <div class="info-group">
+                    <span class="label">Eğitim Durumu</span>
+                    <span class="value" id="dispEdu">-</span>
+                </div>
             </div>
         </div>
-        <div>
-            <div class="info-group">
-                <span class="label">Yaş / Cinsiyet</span>
-                <span class="value" id="dispAgeGender">-</span>
-            </div>
-            <div class="info-group">
-                <span class="label">Eğitim Durumu</span>
-                <span class="value" id="dispEdu">-</span>
-            </div>
-        </div>
-    </div>
 
-    <h3 style="color: #6b46c1; font-size: 1rem;">SAATLİK ÜCRET TARİFESİ</h3>
-    <div class="rates-container">
-        <div class="rate-item">
-            <span class="label">Net Maaş</span>
-            <span class="rate-val" id="rateSalary">0 ₺</span>
+        <h3 style="color: #6b46c1; font-size: 1rem;">SAATLİK ÜCRET TARİFESİ</h3>
+        <div class="rates-container">
+            <div class="rate-item">
+                <span class="label">Net Maaş</span>
+                <span class="rate-val" id="rateSalary">0 ₺</span>
+            </div>
+            <div class="rate-item">
+                <span class="label">Normal Saatlik</span>
+                <span class="rate-val" id="rateNormal">0 ₺</span>
+            </div>
+            <div class="rate-item">
+                <span class="label">Mesai (%50)</span>
+                <span class="rate-val" id="rate15">0 ₺</span>
+            </div>
+            <div class="rate-item">
+                <span class="label">Tatil/Pazar (%100)</span>
+                <span class="rate-val" id="rate20">0 ₺</span>
+            </div>
         </div>
-        <div class="rate-item">
-            <span class="label">Normal Saatlik</span>
-            <span class="rate-val" id="rateNormal">0 ₺</span>
-        </div>
-        <div class="rate-item">
-            <span class="label">Mesai (%50)</span>
-            <span class="rate-val" id="rate15">0 ₺</span>
-        </div>
-        <div class="rate-item">
-            <span class="label">Tatil/Pazar (%100)</span>
-            <span class="rate-val" id="rate20">0 ₺</span>
-        </div>
-    </div>
 
-    <h3 style="color: #6b46c1; font-size: 1rem;">MESAİ VE İZİN HAREKETLERİ</h3>
-    <table id="staffTable">
-        <thead>
-            <tr>
-                <th>Tarih</th>
-                <th>Tür</th>
-                <th>Saat Aralığı</th>
-                <th>Çarpan</th>
-                <th>Hakediş</th>
-            </tr>
-        </thead>
-        <tbody id="movementsBody"></tbody>
-    </table>
+        <h3 style="color: #6b46c1; font-size: 1rem;">MESAİ VE İZİN HAREKETLERİ</h3>
+        <table id="staffTable">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Tür</th>
+                    <th>Saat Aralığı</th>
+                    <th>Çarpan</th>
+                    <th>Hakediş</th>
+                </tr>
+            </thead>
+            <tbody id="movementsBody"></tbody>
+        </table>
 
-    <div class="summary-box">
-        <div style="color: #4a5568; margin-bottom: 5px;">TOPLAM ÖDENECEK TUTAR (Maaş + Mesailer)</div>
-        <div class="total-amount" id="grandTotal">0.00 ₺</div>
+        <div class="summary-box">
+            <div style="color: #4a5568; margin-bottom: 5px;">TOPLAM ÖDENECEK TUTAR (Maaş + Mesailer)</div>
+            <div class="total-amount" id="grandTotal">0.00 ₺</div>
+        </div>
     </div>
 </div>
 
 <script>
+    // --- GITHUB YAPILANDIRMASI ---
+    const GITHUB_CONFIG = {
+        token: 'TOKEN_BURAYA', 
+        owner: 'KULLANICI_ADIN_BURAYA', 
+        repo: 'REPO_ADIN_BURAYA', 
+        path: 'data.json'
+    };
+
     const resmiTatiller2026 = [
         "2026-01-01", "2026-04-23", "2026-05-01", "2026-05-19", 
         "2026-07-15", "2026-08-30", "2026-10-29",
@@ -129,7 +141,7 @@
     ];
 
     function logout() {
-        localStorage.removeItem('loggedUser');
+        sessionStorage.removeItem('loggedUser');
         location.href = 'index.html';
     }
 
@@ -151,56 +163,75 @@
         return { cost: hours * hourlyRate, multi: 'x1.0' };
     }
 
-    function renderPersonelData() {
-        const loggedUser = JSON.parse(localStorage.getItem('loggedUser'));
+    async function fetchCloudData() {
+        const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
+        const response = await fetch(url, {
+            headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` }
+        });
+        if (!response.ok) throw new Error("GitHub verisi alınamadı");
+        const data = await response.json();
+        return JSON.parse(decodeURIComponent(escape(atob(data.content))));
+    }
+
+    async function renderPersonelData() {
+        const loggedUser = JSON.parse(sessionStorage.getItem('loggedUser'));
         if(!loggedUser) { location.href = 'index.html'; return; }
 
-        const db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
-        const user = db.users.find(u => u.user === loggedUser.user);
-        
-        if(!user) { alert("Kullanıcı verisi bulunamadı!"); return; }
-
-        const myRecords = db.records.filter(r => r.owner === user.user);
-
-        // Profil Bilgileri
-        document.getElementById('dispName').innerText = user.name || "-";
-        document.getElementById('dispTitle').innerText = user.title || "-";
-        document.getElementById('dispAgeGender').innerText = `${user.age || 0} Yaş / ${user.gender || "-"}`;
-        document.getElementById('dispEdu').innerText = user.edu || "-";
-        document.getElementById('dispLicense').innerText = user.license || "Yok";
-        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('tr-TR') + " Tarihi itibariyle";
-
-        // Ücret Bilgileri
-        const hRate = parseFloat(user.hourlyRate) || 0;
-        const salary = parseFloat(user.salary) || 0;
-        
-        document.getElementById('rateSalary').innerText = salary.toLocaleString('tr-TR') + " ₺";
-        document.getElementById('rateNormal').innerText = hRate.toFixed(2) + " ₺";
-        document.getElementById('rate15').innerText = (hRate * 1.5).toFixed(2) + " ₺";
-        document.getElementById('rate20').innerText = (hRate * 2).toFixed(2) + " ₺";
-
-        // Hareketler ve Hesaplama
-        const tbody = document.getElementById('movementsBody');
-        let mesaiToplam = 0;
-        tbody.innerHTML = "";
-
-        myRecords.forEach(r => {
-            const calc = calculateRow(r, hRate);
-            mesaiToplam += calc.cost;
+        try {
+            const db = await fetchCloudData();
+            const user = db.users.find(u => u.user === loggedUser.user);
             
-            tbody.innerHTML += `
-                <tr>
-                    <td>${r.startDate}</td>
-                    <td>${r.type}</td>
-                    <td>${r.in || '-'} / ${r.out || '-'}</td>
-                    <td style="font-weight:bold; color:#b33a1b;">${calc.multi}</td>
-                    <td>${calc.cost.toFixed(2)} ₺</td>
-                </tr>
-            `;
-        });
+            if(!user) { alert("Kullanıcı verisi bulutta bulunamadı!"); return; }
 
-        const totalPay = salary + mesaiToplam;
-        document.getElementById('grandTotal').innerText = totalPay.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + " ₺";
+            const myRecords = db.records.filter(r => r.owner === user.user);
+
+            // Arayüzü Göster
+            document.getElementById('loadingMsg').style.display = 'none';
+            document.getElementById('mainDisplay').style.display = 'block';
+
+            // Profil Bilgileri
+            document.getElementById('dispName').innerText = user.name || "-";
+            document.getElementById('dispTitle').innerText = user.title || "-";
+            document.getElementById('dispAgeGender').innerText = `${user.age || 0} Yaş / ${user.gender || "-"}`;
+            document.getElementById('dispEdu').innerText = user.edu || "-";
+            document.getElementById('dispLicense').innerText = user.license || "Yok";
+            document.getElementById('currentDate').innerText = new Date().toLocaleDateString('tr-TR') + " Tarihi itibariyle";
+
+            // Ücret Bilgileri
+            const hRate = parseFloat(user.hourlyRate) || 0;
+            const salary = parseFloat(user.salary) || 0;
+            
+            document.getElementById('rateSalary').innerText = salary.toLocaleString('tr-TR') + " ₺";
+            document.getElementById('rateNormal').innerText = hRate.toFixed(2) + " ₺";
+            document.getElementById('rate15').innerText = (hRate * 1.5).toFixed(2) + " ₺";
+            document.getElementById('rate20').innerText = (hRate * 2).toFixed(2) + " ₺";
+
+            // Hareketler ve Hesaplama
+            const tbody = document.getElementById('movementsBody');
+            let mesaiToplam = 0;
+            tbody.innerHTML = "";
+
+            myRecords.forEach(r => {
+                const calc = calculateRow(r, hRate);
+                mesaiToplam += calc.cost;
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${r.startDate}</td>
+                        <td>${r.type}</td>
+                        <td>${r.in || '-'} / ${r.out || '-'}</td>
+                        <td style="font-weight:bold; color:#b33a1b;">${calc.multi}</td>
+                        <td>${calc.cost.toFixed(2)} ₺</td>
+                    </tr>
+                `;
+            });
+
+            const totalPay = salary + mesaiToplam;
+            document.getElementById('grandTotal').innerText = totalPay.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + " ₺";
+        } catch (e) {
+            document.getElementById('loadingMsg').innerText = "Hata: Veriler buluttan çekilemedi. GitHub ayarlarını kontrol edin.";
+            console.error(e);
+        }
     }
 
     function downloadPDF() {
@@ -215,7 +246,6 @@
         html2pdf().set(opt).from(element).save();
     }
 
-    // Sayfa yüklendiğinde çalıştır
     window.onload = renderPersonelData;
 </script>
 </body>
