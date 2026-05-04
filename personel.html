@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panotech - Personel Mesai Paneli</title>
+    <style>
+        :root { --panotech-orange: #b33a1b; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
+        .header { background: white; padding: 15px 20px; display: flex; justify-content: space-between; border-bottom: 2px solid var(--panotech-orange); }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input, select { padding: 12px; border: 1px solid #ddd; border-radius: 6px; width: 100%; box-sizing: border-box; margin-bottom: 10px; }
+        .btn { padding: 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; background: var(--panotech-orange); color: white; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
+        th { background: #f8f9fa; color: #666; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div id="welcomeText" style="color:var(--panotech-orange); font-weight:bold;">PERSONEL PANELİ</div>
+    <button onclick="location.href='index.html'" style="cursor:pointer; background:none; border:1px solid #ccc; padding:5px 10px; border-radius:4px;">Çıkış Yap</button>
+</div>
+
+<div class="container">
+    <h3 style="margin-top:0;">📅 YENİ MESAİ GİRİŞİ</h3>
+    <input type="date" id="mDate">
+    <div style="display:flex; gap:10px;">
+        <input type="time" id="mIn" value="08:00">
+        <input type="time" id="mOut" value="18:00">
+    </div>
+    <select id="mType">
+        <option value="Mesai">Normal Mesai</option>
+        <option value="Hafta Sonu">Cumartesi/Pazar Mesaisi</option>
+        <option value="İzin">Yıllık İzin</option>
+    </select>
+    <button class="btn" onclick="addWork()">MESAİYİ KAYDET</button>
+
+    <h3>📋 GEÇMİŞ KAYITLARIM</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tarih</th>
+                <th>Saat Aralığı</th>
+                <th>Tür</th>
+            </tr>
+        </thead>
+        <tbody id="workTable"></tbody>
+    </table>
+</div>
+
+<script>
+    // Giriş yapan kullanıcıyı kontrol et
+    const loggedUser = JSON.parse(sessionStorage.getItem('loggedUser'));
+    if(!loggedUser) { window.location.href = 'index.html'; }
+    document.getElementById('welcomeText').innerText = "HOŞ GELDİN, " + loggedUser.name.toUpperCase();
+
+    function addWork() {
+        const entry = {
+            id: Date.now(),
+            owner: loggedUser.user,
+            date: document.getElementById('mDate').value,
+            in: document.getElementById('mIn').value,
+            out: document.getElementById('mOut').value,
+            type: document.getElementById('mType').value
+        };
+
+        if(!entry.date) return alert("Lütfen tarih seçin!");
+
+        let db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], work: [] };
+        if(!db.work) db.work = [];
+        db.work.push(entry);
+        localStorage.setItem('panotech_db', JSON.stringify(db));
+        alert("Mesai kaydedildi.");
+        renderWork();
+    }
+
+    function renderWork() {
+        const table = document.getElementById('workTable');
+        const db = JSON.parse(localStorage.getItem('panotech_db')) || { work: [] };
+        const myWork = (db.work || []).filter(w => w.owner === loggedUser.user);
+        
+        table.innerHTML = myWork.map(w => `
+            <tr>
+                <td>${w.date}</td>
+                <td>${w.in} - ${w.out}</td>
+                <td>${w.type}</td>
+            </tr>
+        `).join('');
+    }
+    renderWork();
+</script>
+
+</body>
+</html>
