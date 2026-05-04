@@ -2,83 +2,141 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>PANOTECH | Personel Giriş</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panotech Asansör Giriş</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #1a202c; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .login-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 100%; max-width: 400px; text-align: center; }
-        h1 { color: #b33a1b; margin-bottom: 30px; font-size: 24px; }
-        input { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #edf2f7; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 15px; background: #b33a1b; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 18px; cursor: pointer; transition: 0.3s; margin-top: 20px; }
-        button:hover { background: #8e2e15; transform: scale(1.02); }
-        #msg { margin-top: 15px; font-weight: bold; }
+        :root { 
+            --panotech-orange: #b33a1b; /* Görseldeki arka plan tonu */
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: "Times New Roman", Times, serif;
+            background-color: var(--panotech-orange);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        /* Ana Başlık: Daha Büyük ve Beyaz */
+        .brand-name {
+            color: white;
+            font-size: 5rem; /* Boyut büyütüldü */
+            font-weight: bold;
+            letter-spacing: 4px;
+            margin: 0;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3); /* Derinlik için hafif gölge */
+        }
+
+        /* Alt Başlık: Daha Büyük ve Beyaz */
+        .brand-sub {
+            color: white;
+            font-size: 1.2rem; /* Boyut büyütüldü */
+            letter-spacing: 2px;
+            line-height: 1.6;
+            margin-top: 15px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .login-form {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            margin-top: 50px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #eee;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1.1rem;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--panotech-orange);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            background-color: #333;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
+            letter-spacing: 1px;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #000;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
 
 <div class="login-card">
-    <h1>PANOTECH SİSTEMİ</h1>
-    <input type="text" id="user" placeholder="Kullanıcı Adı">
-    <input type="password" id="pass" placeholder="Şifre">
-    <button onclick="islemYap('Giriş')">MESAİ BAŞLAT</button>
-    <button onclick="islemYap('Çıkış')" style="background:#4a5568;">MESAİ BİTİR</button>
-    <div id="msg"></div>
+    <h1 class="brand-name">PANOTECH</h1>
+    <div class="brand-sub">
+        ASANSÖR KONTROL SİSTEMLERİ <br>
+        SAN. ve TİC. LTD. ŞTİ.
+    </div>
+
+    <div class="login-form">
+        <input type="text" id="username" placeholder="Kullanıcı Adı">
+        <input type="password" id="password" placeholder="Şifre">
+        <button onclick="handleLogin()">Sisteme Giriş Yap</button>
+    </div>
 </div>
 
 <script>
-    const CONFIG = {
-        token: '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', // Kendi çalışan tokenını buraya koy
-        owner: 'grkndmrky3536',
-        repo: 'panotech-data'
-    };
+    // Varsayılan yönetici hesabı
+    const users = [
+        { user: "admin", pass: "1234", role: "admin", name: "Gürkan Demirkaya" }
+    ];
 
-    async function islemYap(tip) {
-        const u = document.getElementById('user').value;
-        const p = document.getElementById('pass').value;
-        const msg = document.getElementById('msg');
-        
-        msg.innerText = "Bağlanıyor...";
+    function handleLogin() {
+        const u = document.getElementById('username').value;
+        const p = document.getElementById('password').value;
 
-        try {
-            const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/data.json`;
-            const res = await fetch(url, { headers: { 'Authorization': `token ${CONFIG.token}` } });
-            const data = await res.json();
-            const db = JSON.parse(atob(data.content));
+        // Yönetici tarafından eklenen personelleri kontrol et
+        const db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [] };
+        const allUsers = [...users, ...db.users];
 
-            // Kullanıcı Kontrolü
-            const personel = db.users.find(x => x.user === u && x.pass === p);
-            
-            if (!personel) {
-                msg.innerText = "❌ Hatalı Kullanıcı veya Şifre!";
-                msg.style.color = "red";
-                return;
+        const foundUser = allUsers.find(x => x.user === u && x.pass === p);
+
+        if (foundUser) {
+            sessionStorage.setItem('loggedUser', JSON.stringify(foundUser));
+            // Yetkiye göre yönlendirme
+            if (foundUser.role === 'admin') {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'personel.html';
             }
-
-            // Kayıt Ekleme
-            const yeniKayit = {
-                ad: personel.name,
-                islem: tip,
-                tarih: new Date().toLocaleString('tr-TR')
-            };
-            
-            db.records.push(yeniKayit);
-
-            // GitHub Güncelleme
-            await fetch(url, {
-                method: 'PUT',
-                headers: { 'Authorization': `token ${CONFIG.token}` },
-                body: JSON.stringify({
-                    message: tip + " kaydı yapıldı",
-                    content: btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2)))),
-                    sha: data.sha
-                })
-            });
-
-            msg.innerText = "✅ " + tip + " İşlemi Başarılı!";
-            msg.style.color = "green";
-        } catch (e) {
-            msg.innerText = "❌ Bağlantı Hatası!";
+        } else {
+            alert("Hatalı kullanıcı adı veya şifre!");
         }
     }
 </script>
+
 </body>
 </html>
