@@ -16,6 +16,23 @@
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
         .full-width { grid-column: span 2; }
         
+        /* Silme Butonu Stili */
+        .btn-delete {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+        .btn-delete:hover {
+            background: #c53030;
+            transform: scale(1.05);
+        }
+
         input, select { padding: 10px; border: 1px solid #ddd; border-radius: 5px; width: 100%; box-sizing: border-box; }
         
         .license-area { background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 15px 0; }
@@ -26,7 +43,7 @@
 
         /* Personel Kartı Tasarımı */
         .staff-card { background: #fff5f5; border-radius: 8px; padding: 15px; margin-bottom: 10px; border-left: 5px solid #6b46c1; }
-        .staff-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 8px; }
+        .staff-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; margin-bottom: 8px; }
         .staff-info { display: flex; gap: 10px; flex-wrap: wrap; }
         .badge { background: #e2e8f0; padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; color: #4a5568; }
         
@@ -51,13 +68,13 @@
         <input type="text" id="pName" placeholder="Ad Soyad">
         <input type="text" id="pUser" placeholder="Kullanıcı Adı">
         <input type="password" id="pPass" placeholder="Şifre">
-        <input type="number" id="pSalary" placeholder="Net Maaş (TL)"> <!-- Maaş eklendi -->
+        <input type="number" id="pSalary" placeholder="Net Maaş (TL)">
     </div>
     <div class="form-grid">
         <select id="pGender"><option>Cinsiyet</option><option>Erkek</option><option>Kadın</option></select>
         <input type="number" id="pAge" placeholder="Yaş">
         <select id="pEdu" class="full-width"><option>Eğitim Durumu (Diploma)</option><option>Lise</option><option>Önlisans</option><option>Lisans</option></select>
-        <select id="pTitle" class="full-width"> <!-- Ünvan dropdown -->
+        <select id="pTitle" class="full-width">
             <option value="">Ünvan Seçin</option>
             <option value="TEKNİK DESTEK ELAMANI">TEKNİK DESTEK ELAMANI</option>
             <option value="PANO MONTAJ USTASI">PANO MONTAJ USTASI</option>
@@ -86,6 +103,7 @@
 </div>
 
 <script>
+    // PERSONEL KAYDETME
     function saveStaff() {
         const salary = document.getElementById('pSalary').value;
         const licenses = Array.from(document.querySelectorAll('input[name="lic"]:checked')).map(c => c.value);
@@ -95,7 +113,7 @@
             user: document.getElementById('pUser').value,
             pass: document.getElementById('pPass').value,
             salary: parseFloat(salary) || 0,
-            hourlyRate: (parseFloat(salary) || 0) / 225, // 225 saat baz alındı
+            hourlyRate: (parseFloat(salary) || 0) / 225,
             gender: document.getElementById('pGender').value,
             age: document.getElementById('pAge').value,
             edu: document.getElementById('pEdu').value,
@@ -110,6 +128,22 @@
         location.reload();
     }
 
+    // PERSONEL SİLME FONKSİYONU
+    function deleteStaff(username) {
+        if(confirm(username + " kullanıcısını ve tüm mesai kayıtlarını silmek istediğinize emin misiniz?")) {
+            let db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
+            
+            // Kullanıcıyı sil
+            db.users = db.users.filter(u => u.user !== username);
+            // Kullanıcıya ait hareketleri sil
+            db.records = db.records.filter(r => r.owner !== username);
+            
+            localStorage.setItem('panotech_db', JSON.stringify(db));
+            renderAll(); // Sayfayı yenile
+        }
+    }
+
+    // MESAİ HESAPLAMA MANTIĞI
     function calculateRow(r, hourlyRate) {
         if(r.type === 'İzin') return { cost: 0, multi: 'İzinli' };
         
@@ -126,14 +160,21 @@
         return { cost: hours * hourlyRate, multi: 'Normal' };
     }
 
+    // TÜMÜNÜ LİSTELEME
     function renderAll() {
         const db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
         
-        // Personel Kartları
+        // Personel Kartları (SİL BUTONU EKLENDİ)
         const staffDiv = document.getElementById('staffList');
         staffDiv.innerHTML = db.users.map(u => `
             <div class="staff-card">
-                <div class="staff-header"><span>${u.name} (${u.title})</span> <span>Maaş: ${u.salary} ₺</span></div>
+                <div class="staff-header">
+                    <span>${u.name} (${u.title})</span> 
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <span>Maaş: ${u.salary} ₺</span>
+                        <button class="btn-delete" onclick="deleteStaff('${u.user}')">SİL</button>
+                    </div>
+                </div>
                 <div class="staff-info">
                     <span class="badge">${u.gender}</span> <span class="badge">${u.age} Yaş</span> 
                     <span class="badge">${u.edu}</span> <span class="badge">Ehliyet: ${u.license}</span>
