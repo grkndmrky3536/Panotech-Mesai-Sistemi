@@ -2,62 +2,67 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>PANOTECH - ADMİN PANELİ</title>
+    <title>PANOTECH ADMİN - BULUT PANEL</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h2 { color: #b33a1b; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        input, select { padding: 10px; border: 1px solid #ddd; border-radius: 5px; width: 100%; box-sizing: border-box; }
-        .btn { padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
-        .btn-save { background: #6b46c1; color: white; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background: #f8fafc; }
-        .license-box { background: #f9f9f9; padding: 10px; border-radius: 5px; grid-column: span 2; }
+        :root { --primary: #b33a1b; --secondary: #6b46c1; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h2 { color: var(--primary); display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; background: #fafafa; padding: 20px; border-radius: 10px; border: 1px solid #eee; }
+        input, select { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--secondary); box-shadow: 0 0 5px rgba(107, 70, 193, 0.2); }
+        .btn-save { background: var(--secondary); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 20px; font-size: 16px; transition: 0.3s; }
+        .btn-save:hover { background: #553c9a; transform: translateY(-2px); }
+        #status { padding: 10px; margin-bottom: 20px; border-radius: 8px; font-weight: bold; text-align: center; }
+        .status-ok { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .status-err { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8fafc; color: #64748b; font-size: 13px; text-transform: uppercase; }
+        .license-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+        .badge { background: #e2e8f0; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>👤 PERSONEL KAYIT FORMU</h2>
+    <div id="status">Bağlantı kontrol ediliyor...</div>
+    
+    <h2>👤 Personel Kayıt Formu</h2>
     <div class="form-grid">
         <input type="text" id="name" placeholder="Ad Soyad">
         <input type="text" id="user" placeholder="Kullanıcı Adı">
         <input type="password" id="pass" placeholder="Şifre">
         <input type="number" id="salary" placeholder="Net Maaş (TL)">
-        <select id="gender"><option value="">Cinsiyet</option><option>Erkek</option><option>Kadın</option></select>
-        <input type="number" id="age" placeholder="Yaş">
-        <select id="edu">
-            <option value="">Eğitim Durumu</option>
-            <option>İlkokul</option><option>Ortaokul</option><option>Lise</option><option>Üniversite</option>
-        </select>
         <select id="title">
             <option value="">Ünvan Seçin</option>
             <option>Usta Başı</option>
             <option>Teknik Destek</option>
             <option>Montaj Personeli</option>
+            <option>Ofis Personeli</option>
         </select>
-        <div class="license-box">
-            <strong>SÜRÜCÜ BELGELERİ:</strong><br>
-            <input type="checkbox" value="B" class="lic"> B 
-            <input type="checkbox" value="BE" class="lic"> BE 
-            <input type="checkbox" value="C" class="lic"> C 
-            <input type="checkbox" value="D" class="lic"> D 
-            <input type="checkbox" value="G" class="lic"> G (İş Makinası)
+        <select id="edu">
+            <option value="">Eğitim Durumu</option>
+            <option>Lise</option><option>Üniversite</option>
+        </select>
+        <div style="grid-column: 1 / -1; display: flex; gap: 20px; align-items: center; border-top: 1px solid #eee; pt: 10px;">
+            <strong>Ehliyetler:</strong>
+            <label><input type="checkbox" value="B" class="lic"> B</label>
+            <label><input type="checkbox" value="BE" class="lic"> BE</label>
+            <label><input type="checkbox" value="C" class="lic"> C</label>
+            <label><input type="checkbox" value="G" class="lic"> G</label>
         </div>
     </div>
-    <button class="btn btn-save" onclick="saveToCloud()">PERSONELİ BULUTA KAYDET</button>
+    <button class="btn-save" onclick="saveToCloud()">BULUTA GÜVENLE KAYDET</button>
 
-    <h2>📋 KAYITLI PERSONEL LİSTESİ</h2>
-    <div id="status">Veriler yükleniyor...</div>
+    <h2>📋 Kayıtlı Personel Listesi</h2>
     <table id="userTable">
         <thead>
             <tr>
                 <th>Ad Soyad</th>
-                <th>Kullanıcı Adı</th>
-                <th>Maaş</th>
                 <th>Ünvan</th>
+                <th>Maaş</th>
+                <th>Ehliyet</th>
                 <th>İşlem</th>
             </tr>
         </thead>
@@ -74,52 +79,53 @@
     };
 
     async function loadData() {
+        const statusDiv = document.getElementById('status');
         try {
             const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
             const res = await fetch(url, { headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` } });
+            if(!res.ok) throw new Error();
             const data = await res.json();
             const content = JSON.parse(atob(data.content));
             renderUsers(content.users);
-            document.getElementById('status').innerText = "Bulut bağlantısı aktif.";
+            statusDiv.innerText = "✅ Bulut Bağlantısı Aktif - Veriler Panotech Güvencesinde";
+            statusDiv.className = "status-ok";
             return { content, sha: data.sha };
         } catch (e) {
-            document.getElementById('status').innerText = "Hata: Bağlantı kurulamadı!";
+            statusDiv.innerText = "❌ Bağlantı Kurulamadı! GitHub'da data.json dosyası olduğundan emin olun.";
+            statusDiv.className = "status-err";
         }
     }
 
     function renderUsers(users) {
-        const tbody = document.getElementById('userBody');
-        tbody.innerHTML = users.map(u => `
+        document.getElementById('userBody').innerHTML = users.map(u => `
             <tr>
-                <td>${u.name}</td>
-                <td>${u.user}</td>
-                <td>${u.salary} ₺</td>
+                <td><strong>${u.name}</strong><br><small>${u.user}</small></td>
                 <td>${u.title}</td>
-                <td><button onclick="deleteUser('${u.user}')">Sil</button></td>
+                <td>${u.salary} ₺</td>
+                <td><div class="license-badges">${u.license.split(',').map(l => `<span class="badge">${l}</span>`).join('')}</div></td>
+                <td><button style="color:red; cursor:pointer;" onclick="deleteUser('${u.user}')">Kaldır</button></td>
             </tr>
         `).join('');
     }
 
     async function saveToCloud() {
-        const { content, sha } = await loadData();
-        const licenses = Array.from(document.querySelectorAll('.lic:checked')).map(c => c.value);
+        const res = await loadData();
+        if(!res) return;
+        const { content, sha } = res;
         
+        const licenses = Array.from(document.querySelectorAll('.lic:checked')).map(c => c.value);
         const newUser = {
             name: document.getElementById('name').value,
             user: document.getElementById('user').value,
             pass: document.getElementById('pass').value,
             salary: document.getElementById('salary').value,
-            hourlyRate: (document.getElementById('salary').value / 225).toFixed(2),
-            gender: document.getElementById('gender').value,
-            age: document.getElementById('age').value,
-            edu: document.getElementById('edu').value,
             title: document.getElementById('title').value,
-            license: licenses.join(', ')
+            license: licenses.join(',') || '-'
         };
 
         content.users.push(newUser);
         await updateGitHub(content, sha);
-        alert("Personel başarıyla buluta eklendi!");
+        alert("Personel başarıyla buluta gönderildi!");
         loadData();
     }
 
@@ -129,7 +135,7 @@
             method: 'PUT',
             headers: { 'Authorization': `token ${GITHUB_CONFIG.token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                message: "Veri güncelleme",
+                message: "Update",
                 content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))),
                 sha: sha
             })
