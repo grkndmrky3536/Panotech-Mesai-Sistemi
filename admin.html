@@ -16,21 +16,8 @@
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
         .full-width { grid-column: span 2; }
         
-        .btn-delete {
-            background: #e53e3e;
-            color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: 0.3s;
-            font-weight: bold;
-        }
-        .btn-delete:hover {
-            background: #c53030;
-            transform: scale(1.05);
-        }
+        .btn-delete { background: #e53e3e; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: 0.3s; font-weight: bold; }
+        .btn-delete:hover { background: #c53030; transform: scale(1.05); }
 
         input, select { padding: 10px; border: 1px solid #ddd; border-radius: 5px; width: 100%; box-sizing: border-box; }
         
@@ -41,10 +28,15 @@
         .btn-submit:hover { background: #553c9a; }
 
         .staff-card { background: #fff5f5; border-radius: 8px; padding: 15px; margin-bottom: 10px; border-left: 5px solid #6b46c1; }
-        .staff-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; margin-bottom: 8px; }
+        .staff-header { display: flex; justify-content: space-between; align-items: flex-start; font-weight: bold; margin-bottom: 8px; }
         .staff-info { display: flex; gap: 10px; flex-wrap: wrap; }
         .badge { background: #e2e8f0; padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; color: #4a5568; }
         
+        .rate-box { text-align: right; font-size: 0.85rem; }
+        .rate-line { color: #4a5568; margin-bottom: 2px; }
+        .rate-val { font-weight: bold; color: #6b46c1; }
+        .rate-sunday { font-weight: bold; color: #b33a1b; }
+
         table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
         th { text-align: left; background: #6b46c1; color: white; padding: 10px; }
         td { padding: 10px; border-bottom: 1px solid #eee; }
@@ -69,7 +61,7 @@
     <div class="form-grid">
         <select id="pGender"><option>Cinsiyet</option><option>Erkek</option><option>Kadın</option></select>
         <input type="number" id="pAge" placeholder="Yaş">
-        <select id="pEdu" class="full-width"><option>Eğitim Durumu (Diploma)</option><option>Lise</option><option>Önlisans</option><option>Lisans</option></select>
+        <select id="pEdu" class="full-width"><option>Eğitim Durumu</option><option>Lise</option><option>Önlisans</option><option>Lisans</option></select>
         <select id="pTitle" class="full-width">
             <option value="">Ünvan Seçin</option>
             <option value="TEKNİK DESTEK ELAMANI">TEKNİK DESTEK ELAMANI</option>
@@ -97,19 +89,33 @@
 </div>
 
 <script>
+    // 2026 TÜRKİYE RESMİ TATİL LİSTESİ
+    const resmiTatiller2026 = [
+        "2026-01-01", // Yılbaşı
+        "2026-04-23", // Ulusal Egemenlik ve Çocuk Bayramı
+        "2026-05-01", // Emek ve Dayanışma Günü
+        "2026-05-19", // Atatürk'ü Anma, Gençlik ve Spor Bayramı
+        "2026-07-15", // Demokrasi ve Milli Birlik Günü
+        "2026-08-30", // Zafer Bayramı
+        "2026-10-29", // Cumhuriyet Bayramı
+        // Dini Bayramlar
+        "2026-03-20", "2026-03-21", "2026-03-22", // Ramazan Bayramı
+        "2026-05-27", "2026-05-28", "2026-05-29", "2026-05-30" // Kurban Bayramı
+    ];
+
     function saveStaff() {
         const uVal = document.getElementById('pUser').value.trim();
         if(!uVal) { alert("Lütfen kullanıcı adı girin!"); return; }
 
-        const salary = document.getElementById('pSalary').value;
+        const salary = parseFloat(document.getElementById('pSalary').value) || 0;
         const licenses = Array.from(document.querySelectorAll('input[name="lic"]:checked')).map(c => c.value);
         
         const newStaff = {
             name: document.getElementById('pName').value,
             user: uVal,
             pass: document.getElementById('pPass').value,
-            salary: parseFloat(salary) || 0,
-            hourlyRate: (parseFloat(salary) || 0) / 225,
+            salary: salary,
+            hourlyRate: salary / 225, 
             gender: document.getElementById('pGender').value,
             age: document.getElementById('pAge').value,
             edu: document.getElementById('pEdu').value,
@@ -125,52 +131,68 @@
     }
 
     function deleteStaff(username) {
-        // Konsolda hangi ismin geldiğini görmek için
-        console.log("Silinmeye çalışılan:", username);
-        
         if(confirm(username + " kullanıcısını silmek istediğinize emin misiniz?")) {
             let db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
-            
-            // Filtreleme yaparken hem kullanıcı adını kontrol et hem de boşlukları temizle
             db.users = db.users.filter(u => u.user !== username);
             db.records = db.records.filter(r => r.owner !== username);
-            
             localStorage.setItem('panotech_db', JSON.stringify(db));
             renderAll(); 
         }
     }
 
     function calculateRow(r, hourlyRate) {
-        if(r.type === 'İzin') return { cost: 0, multi: 'İzinli' };
-        const date = new Date(r.startDate);
-        const day = date.getDay();
-        const start = new Date(`${r.startDate}T${r.in}`);
-        const end = new Date(`${r.startDate}T${r.out}`);
+        if(r.type === 'İzin') return { cost: 0, multi: 'İzinli', label: 'İzin' };
+        
+        const dateStr = r.startDate;
+        const date = new Date(dateStr);
+        const day = date.getDay(); 
+        const start = new Date(`${dateStr}T${r.in}`);
+        const end = new Date(`${dateStr}T${r.out}`);
         const hours = (end - start) / (1000 * 60 * 60);
 
-        if(day === 0) return { cost: hours * hourlyRate * 2, multi: 'x2.0 (Pazar)' };
-        if(day === 6) return { cost: hours * hourlyRate * 1.5, multi: 'x1.5 (Cmt)' };
-        if(r.out > "18:00") return { cost: hours * hourlyRate * 1.5, multi: 'x1.5 (H.İçi Akşam)' };
+        // 1. ÖNCELİK: RESMİ TATİL KONTROLÜ
+        if(resmiTatiller2026.includes(dateStr)) {
+            return { cost: hours * hourlyRate * 2, multi: 'x2.0', label: 'Resmi Tatil (%100)' };
+        }
+
+        // 2. ÖNCELİK: PAZAR GÜNÜ
+        if(day === 0) {
+            return { cost: hours * hourlyRate * 2, multi: 'x2.0', label: 'Pazar (%100)' };
+        }
         
-        return { cost: hours * hourlyRate, multi: 'Normal' };
+        // 3. ÖNCELİK: CUMARTESİ VEYA HAFTA İÇİ AKŞAM
+        if(day === 6 || r.in >= "18:00") {
+            let sebep = day === 6 ? "Cumartesi" : "Akşam Mesaisi";
+            return { cost: hours * hourlyRate * 1.5, multi: 'x1.5', label: sebep + ' (%50)' };
+        }
+        
+        return { cost: hours * hourlyRate, multi: 'x1.0', label: 'Normal' };
     }
 
     function renderAll() {
         const db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
         const staffDiv = document.getElementById('staffList');
         
-        staffDiv.innerHTML = ""; // İçeriği temizle
+        staffDiv.innerHTML = "";
 
         db.users.forEach(u => {
             const card = document.createElement('div');
             card.className = 'staff-card';
-            // onclick olayını dinamik olarak ekleyerek tırnak işareti hatalarını engelliyoruz
+            
+            const mesai15 = (u.hourlyRate * 1.5).toFixed(2);
+            const mesai20 = (u.hourlyRate * 2.0).toFixed(2);
+
             card.innerHTML = `
                 <div class="staff-header">
-                    <span>${u.name} (${u.title})</span> 
-                    <div style="display:flex; align-items:center; gap:15px;">
-                        <span>Maaş: ${u.salary} ₺</span>
-                        <button class="btn-delete">SİL</button>
+                    <div>
+                        <div style="font-size:1.1rem;">${u.name}</div>
+                        <div style="font-size:0.8rem; color:#666;">${u.title}</div>
+                    </div>
+                    <div class="rate-box">
+                        <div class="rate-line">Net Maaş: <b>${u.salary} ₺</b></div>
+                        <div class="rate-line">Mesai (%50): <span class="rate-val">${mesai15} ₺/Sa</span></div>
+                        <div class="rate-line">Pazar/Tatil (%100): <span class="rate-sunday">${mesai20} ₺/Sa</span></div>
+                        <button class="btn-delete" style="margin-top:8px;">PERSONELİ SİL</button>
                     </div>
                 </div>
                 <div class="staff-info">
@@ -179,23 +201,23 @@
                 </div>
             `;
             
-            // Butona tıklama özelliğini burada güvenli şekilde bağlıyoruz
             card.querySelector('.btn-delete').onclick = () => deleteStaff(u.user);
             staffDiv.appendChild(card);
         });
 
         const moveDiv = document.getElementById('movementsTable');
-        let tableHtml = `<table><tr><th>Personel</th><th>Tür</th><th>Tarih</th><th>Saat</th><th>Çarpan</th><th>Hakediş</th></tr>`;
+        let tableHtml = `<table><tr><th>Personel</th><th>Tür</th><th>Tarih</th><th>Saat Aralığı</th><th>Çarpan</th><th>Hakediş</th></tr>`;
+        
         db.records.forEach(r => {
             const staff = db.users.find(u => u.user === r.owner) || { hourlyRate: 0 };
             const calc = calculateRow(r, staff.hourlyRate);
             tableHtml += `<tr>
                 <td>${r.ownerName}</td>
                 <td>${r.type}</td>
-                <td>${r.startDate} ${r.endDate ? '- ' + r.endDate : ''}</td>
+                <td>${r.startDate}</td>
                 <td>${r.in || '-'} / ${r.out || '-'}</td>
-                <td class="multiplier">${calc.multi}</td>
-                <td>${calc.cost.toFixed(2)} ₺</td>
+                <td class="multiplier" title="${calc.label}">${calc.multi} <small>(${calc.label})</small></td>
+                <td style="font-weight:bold;">${calc.cost.toFixed(2)} ₺</td>
             </tr>`;
         });
         moveDiv.innerHTML = tableHtml + `</table>`;
