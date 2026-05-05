@@ -3,195 +3,650 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PANOTECH PERSONEL PANELİ</title>
+    <title>Panotech — Personel Paneli</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: sans-serif; background-color: #f4f7f9; margin: 0; padding: 0; }
-        .header { background: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #b33a1b; }
-        .header h1 { color: #b33a1b; font-size: 1.2rem; margin: 0; text-transform: uppercase; }
-        #pdf-content { max-width: 900px; margin: 20px auto; background: white; border-radius: 8px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .profile-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 20px; }
-        .info-group { margin-bottom: 10px; }
-        .label { color: #666; font-size: 0.85rem; display: block; }
-        .value { font-weight: bold; color: #2d3748; font-size: 1.1rem; }
-        .rates-container { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; display: flex; justify-content: space-around; margin-bottom: 25px; }
-        .rate-item { text-align: center; }
-        .rate-val { display: block; font-size: 1.2rem; font-weight: bold; color: #6b46c1; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { background: #6b46c1; color: white; padding: 12px; text-align: left; font-size: 0.9rem; }
-        td { padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 0.9rem; }
-        .summary-box { margin-top: 25px; padding: 20px; background: #fff5f5; border-radius: 8px; text-align: right; }
-        .total-amount { font-size: 1.5rem; font-weight: bold; color: #b33a1b; }
-        .action-buttons { max-width: 900px; margin: 10px auto; display: flex; gap: 10px; }
-        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn-pdf { background: #2d3748; color: white; }
-        .btn-logout { background: #e53e3e; color: white; }
+        :root {
+            --red: #C0392B;
+            --red-dark: #922b21;
+            --purple: #6b46c1;
+            --purple-light: #ede9f6;
+            --black: #0d0d0d;
+            --bg: #f0ede8;
+            --white: #ffffff;
+            --border: #e2ddd8;
+            --text: #1a1a1a;
+            --muted: #888;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); }
+
+        .header {
+            background: var(--black);
+            padding: 0 30px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-brand {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            color: white;
+            letter-spacing: 3px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-brand span {
+            font-size: 0.65rem;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            letter-spacing: 2px;
+            color: #aaa;
+            text-transform: uppercase;
+        }
+
+        .header-right { display: flex; gap: 10px; align-items: center; }
+
+        .btn {
+            padding: 9px 18px;
+            border: none;
+            border-radius: 5px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-dark { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.12); }
+        .btn-dark:hover { background: rgba(255,255,255,0.15); color: white; }
+        .btn-red { background: var(--red); color: white; }
+        .btn-red:hover { background: var(--red-dark); }
+        .btn-purple { background: var(--purple); color: white; }
+        .btn-purple:hover { background: #553c9a; }
+
+        .content { max-width: 960px; margin: 0 auto; padding: 24px 20px; }
+
+        /* PROFİL HERO */
+        .profile-hero {
+            background: var(--black);
+            border-radius: 12px;
+            padding: 28px;
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-hero::before {
+            content: '';
+            position: absolute;
+            right: -30px; top: -30px;
+            width: 180px; height: 180px;
+            border-radius: 50%;
+            background: rgba(192,57,43,0.15);
+            pointer-events: none;
+        }
+
+        .profile-avatar {
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            background: var(--red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .profile-info h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            color: white;
+            line-height: 1;
+        }
+
+        .profile-info p {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.8rem;
+            margin-top: 4px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .profile-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+        .pbadge {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.6);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 500;
+        }
+
+        /* STAT KARTLARI */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .stat-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .stat-val {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.7rem;
+            line-height: 1;
+        }
+
+        .stat-val.purple { color: var(--purple); }
+        .stat-val.red { color: var(--red); }
+
+        /* KARTLAR */
+        .card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            color: var(--text);
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title .dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--purple);
+        }
+
+        /* ÜCRET TARİFESİ */
+        .rates-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+
+        .rate-item {
+            text-align: center;
+            padding: 14px;
+            background: #fafafa;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .rate-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
+        .rate-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: var(--purple); }
+
+        /* FİLTRE */
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .field { display: flex; flex-direction: column; gap: 5px; }
+
+        .field label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .field select, .field input {
+            padding: 9px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            color: var(--text);
+            background: white;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .field select:focus, .field input:focus { border-color: var(--purple); }
+
+        /* TABLO */
+        .table-wrap { overflow-x: auto; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+
+        thead th {
+            background: var(--text);
+            color: white;
+            padding: 11px 14px;
+            text-align: left;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        tbody td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
+        tbody tr:hover td { background: #fafafa; }
+
+        .chip {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .chip-red { background: #fef2f2; color: var(--red); }
+        .chip-purple { background: var(--purple-light); color: var(--purple); }
+        .chip-gray { background: #f0ede8; color: #777; }
+        .chip-green { background: #f0fdf4; color: #16a34a; }
+
+        /* ÖZET KUTUSU */
+        .summary-box {
+            background: var(--black);
+            border-radius: 10px;
+            padding: 22px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .summary-label { color: rgba(255,255,255,0.5); font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; }
+        .summary-val {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.2rem;
+            color: white;
+            letter-spacing: 2px;
+        }
+
+        .summary-sub {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+            margin-top: 2px;
+        }
+
+        /* GRAFİK */
+        .chart-container { position: relative; height: 230px; }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        /* PDF BUTON */
+        .pdf-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .profile-hero { flex-direction: column; text-align: center; }
+            .profile-badges { justify-content: center; }
+            .filter-bar { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>PANOTECH PERSONEL SİSTEMİ</h1>
-    <button class="btn btn-logout" onclick="logout()">GÜVENLİ ÇIKIŞ</button>
+    <div class="header-brand">
+        PANOTECH <span>Personel Paneli</span>
+    </div>
+    <div class="header-right">
+        <button class="btn btn-dark" onclick="downloadPDF()">📄 PDF İndir</button>
+        <button class="btn btn-red" onclick="logout()">Çıkış</button>
+    </div>
 </div>
 
-<div class="action-buttons">
-    <button class="btn btn-pdf" onclick="downloadPDF()">📄 EKSTREYİ PDF OLARAK İNDİR</button>
-</div>
+<div class="content" id="pdf-content">
 
-<div id="pdf-content">
-    <div style="text-align: center; margin-bottom: 30px;">
-        <h2 style="color: #b33a1b; margin: 0;">PERSONEL MAAŞ VE MESAİ EKSTRESİ</h2>
-        <p id="currentDate" style="color: #718096; font-size: 0.9rem;"></p>
+    <!-- Profil Hero -->
+    <div class="profile-hero">
+        <div class="profile-avatar" id="profileAvatar">?</div>
+        <div class="profile-info">
+            <h2 id="dispName">—</h2>
+            <p id="dispTitle">—</p>
+            <div class="profile-badges" id="profileBadges"></div>
+        </div>
     </div>
 
-    <div class="profile-section">
-        <div>
-            <div class="info-group">
-                <span class="label">Ad Soyad</span>
-                <span class="value" id="dispName">-</span>
+    <!-- Özet İstatistikler -->
+    <div class="stats-row" id="statsRow"></div>
+
+    <!-- Ücret Tarifesi -->
+    <div class="card">
+        <div class="card-title"><span class="dot"></span> SAATLİK ÜCRET TARİFESİ</div>
+        <div class="rates-row">
+            <div class="rate-item">
+                <div class="rate-label">Net Maaş</div>
+                <div class="rate-val" id="rateSalary" style="color:var(--text)">—</div>
             </div>
-            <div class="info-group">
-                <span class="label">Ünvan</span>
-                <span class="value" id="dispTitle">-</span>
+            <div class="rate-item">
+                <div class="rate-label">Normal</div>
+                <div class="rate-val" id="rateNormal">—</div>
+            </div>
+            <div class="rate-item">
+                <div class="rate-label">Mesai (%50)</div>
+                <div class="rate-val" id="rate15">—</div>
+            </div>
+            <div class="rate-item">
+                <div class="rate-label">Tatil (%100)</div>
+                <div class="rate-val" id="rate20" style="color:var(--red)">—</div>
             </div>
         </div>
-        <div>
-            <div class="info-group">
-                <span class="label">Ehliyet / Sertifika</span>
-                <span class="value" id="dispLicense">B Sınıfı / Forklift / Bekolader</span>
+    </div>
+
+    <!-- Grafik -->
+    <div class="card">
+        <div class="card-title"><span class="dot"></span> AYLIK MESAİ GRAFİĞİ</div>
+        <div class="chart-container">
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Hareketler -->
+    <div class="card">
+        <div class="card-title"><span class="dot"></span> MESAİ & İZİN HAREKETLERİ</div>
+
+        <div class="filter-bar">
+            <div class="field">
+                <label>Ay</label>
+                <select id="filterMonth" onchange="renderData()">
+                    <option value="">Tümü</option>
+                    <option value="01">Ocak</option><option value="02">Şubat</option>
+                    <option value="03">Mart</option><option value="04">Nisan</option>
+                    <option value="05">Mayıs</option><option value="06">Haziran</option>
+                    <option value="07">Temmuz</option><option value="08">Ağustos</option>
+                    <option value="09">Eylül</option><option value="10">Ekim</option>
+                    <option value="11">Kasım</option><option value="12">Aralık</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Tür</label>
+                <select id="filterType" onchange="renderData()">
+                    <option value="">Tümü</option>
+                    <option value="Mesai">Mesai</option>
+                    <option value="İzin">İzin</option>
+                </select>
             </div>
         </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tarih</th>
+                        <th>Tür</th>
+                        <th>Saat Aralığı</th>
+                        <th>Çarpan</th>
+                        <th>Hakediş</th>
+                    </tr>
+                </thead>
+                <tbody id="movementsBody"></tbody>
+            </table>
+        </div>
     </div>
 
-    <h3 style="color: #6b46c1; font-size: 1rem;">SAATLİK ÜCRET TARİFESİ</h3>
-    <div class="rates-container">
-        <div class="rate-item">
-            <span class="label">Net Maaş</span>
-            <span class="rate-val" id="rateSalary">0 ₺</span>
-        </div>
-        <div class="rate-item">
-            <span class="label">Mesai (%50)</span>
-            <span class="rate-val" id="rate15">0 ₺</span>
-        </div>
-        <div class="rate-item">
-            <span class="label">Pazar/Tatil (%100)</span>
-            <span class="rate-val" id="rate20">0 ₺</span>
-        </div>
-    </div>
+    <div class="summary-box" id="summaryBox"></div>
 
-    <h3 style="color: #6b46c1; font-size: 1rem;">SON HAREKETLER</h3>
-    <table id="staffTable">
-        <thead>
-            <tr>
-                <th>Tarih</th>
-                <th>İşlem Türü</th>
-            </tr>
-        </thead>
-        <tbody id="movementsBody"></tbody>
-    </table>
-
-    <div class="summary-box">
-        <div style="color: #4a5568; margin-bottom: 5px;">GÜNCEL MAAŞ BİLGİSİ</div>
-        <div class="total-amount" id="grandTotal">0.00 ₺</div>
-    </div>
 </div>
 
 <script>
-    const CONFIG = {
-        token: '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', 
-        owner: 'grkndmrky3536',
-        repo: 'panotech-data'
-    };
+const TATILLER = [
+    "2026-01-01","2026-04-23","2026-05-01","2026-05-19",
+    "2026-07-15","2026-08-30","2026-10-29",
+    "2026-03-20","2026-03-21","2026-03-22",
+    "2026-05-27","2026-05-28","2026-05-29","2026-05-30"
+];
 
-    function logout() {
-        sessionStorage.clear();
-        location.href = 'index.html';
+let myChart = null;
+
+function logout() {
+    sessionStorage.removeItem('loggedUser');
+    location.href = 'index.html';
+}
+
+function calcRow(r, hourlyRate) {
+    if (r.type === 'İzin') return { cost: 0, multi: 'İzin', label: 'İzin', chip: 'chip-gray', hours: 0 };
+    const dateStr = r.startDate;
+    const day = new Date(dateStr).getDay();
+    const hours = (new Date(`${dateStr}T${r.out}`) - new Date(`${dateStr}T${r.in}`)) / 3600000;
+
+    if (TATILLER.includes(dateStr) || day === 0) {
+        return { cost: hours * hourlyRate * 2, multi: 'x2.0', label: 'Tatil/Pazar', chip: 'chip-red', hours };
+    }
+    if (day === 6 || r.in >= "18:00") {
+        return { cost: hours * hourlyRate * 1.5, multi: 'x1.5', label: day===6?'Cumartesi':'Akşam', chip: 'chip-purple', hours };
+    }
+    return { cost: hours * hourlyRate, multi: 'x1.0', label: 'Normal', chip: 'chip-green', hours };
+}
+
+function renderData() {
+    const loggedUser = JSON.parse(sessionStorage.getItem('loggedUser'));
+    if (!loggedUser) { location.href = 'index.html'; return; }
+
+    const db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
+    const user = db.users.find(u => u.user === loggedUser.user);
+    if (!user) { location.href = 'index.html'; return; }
+
+    const fMonth = document.getElementById('filterMonth').value;
+    const fType = document.getElementById('filterType').value;
+
+    let records = db.records.filter(r => {
+        if (r.owner !== user.user) return false;
+        if (fMonth && r.startDate.split('-')[1] !== fMonth) return false;
+        if (fType && r.type !== fType) return false;
+        return true;
+    });
+
+    const hRate = user.hourlyRate || 0;
+
+    // Profil
+    document.getElementById('profileAvatar').textContent = user.name.charAt(0);
+    document.getElementById('dispName').textContent = user.name;
+    document.getElementById('dispTitle').textContent = user.title;
+    document.getElementById('profileBadges').innerHTML = `
+        <span class="pbadge">${user.gender}</span>
+        <span class="pbadge">${user.age} Yaş</span>
+        <span class="pbadge">${user.edu}</span>
+        ${user.license ? `<span class="pbadge">🪪 ${user.license}</span>` : ''}
+        <span class="pbadge">${new Date().toLocaleDateString('tr-TR')} itibarıyla</span>
+    `;
+
+    // Ücretler
+    document.getElementById('rateSalary').textContent = user.salary + ' ₺';
+    document.getElementById('rateNormal').textContent = hRate.toFixed(2) + ' ₺/Sa';
+    document.getElementById('rate15').textContent = (hRate * 1.5).toFixed(2) + ' ₺/Sa';
+    document.getElementById('rate20').textContent = (hRate * 2).toFixed(2) + ' ₺/Sa';
+
+    // Hareketler
+    const tbody = document.getElementById('movementsBody');
+    let mesaiToplam = 0;
+    let totalHours = 0;
+    let izinCount = 0;
+
+    if (!records.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Bu filtreler için kayıt bulunamadı.</td></tr>';
+    } else {
+        tbody.innerHTML = records.map(r => {
+            const c = calcRow(r, hRate);
+            mesaiToplam += c.cost;
+            totalHours += c.hours;
+            if (r.type === 'İzin') izinCount++;
+            return `<tr>
+                <td>${r.startDate}</td>
+                <td>${r.type}</td>
+                <td>${r.in || '—'} / ${r.out || '—'}</td>
+                <td><span class="chip ${c.chip}">${c.multi}</span></td>
+                <td><b>${c.cost.toFixed(2)} ₺</b></td>
+            </tr>`;
+        }).join('');
     }
 
-    // Türkçe karakterleri bozmadan Base64 çözme fonksiyonu
-    function b64DecodeUnicode(str) {
-        return decodeURIComponent(atob(str).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-    }
+    // Stats
+    const allMyRecords = db.records.filter(r => r.owner === user.user);
+    let totalAllMesai = 0;
+    allMyRecords.forEach(r => { totalAllMesai += calcRow(r, hRate).cost; });
 
-    async function renderPersonelData() {
-        // index.html'den gelen kullanıcı bilgisini kontrol et
-        const loggedUser = JSON.parse(sessionStorage.getItem('loggedUser'));
-        
-        if (!loggedUser || !loggedUser.user) { 
-            console.error("Oturum bulunamadı.");
-            location.href = 'index.html'; 
-            return; 
-        }
+    document.getElementById('statsRow').innerHTML = `
+        <div class="stat-card">
+            <div class="stat-label">Net Maaş</div>
+            <div class="stat-val purple">${user.salary} ₺</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Mesai Saati (Filtre)</div>
+            <div class="stat-val">${totalHours.toFixed(1)} Sa</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">İzin Günü (Filtre)</div>
+            <div class="stat-val">${izinCount}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Tüm Mesai Bedeli</div>
+            <div class="stat-val red">${totalAllMesai.toLocaleString('tr-TR',{minimumFractionDigits:2})} ₺</div>
+        </div>
+    `;
 
-        try {
-            const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/data.json`;
-            const res = await fetch(url, { 
-                headers: { 'Authorization': `token ${CONFIG.token}` },
-                cache: 'no-store' // Veriyi her zaman taze çek
-            });
+    // Özet
+    const grandTotal = parseFloat(user.salary) + mesaiToplam;
+    document.getElementById('summaryBox').innerHTML = `
+        <div>
+            <div class="summary-label">Maaş</div>
+            <div style="font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:rgba(255,255,255,0.6);">${user.salary} ₺</div>
+        </div>
+        <div style="color:rgba(255,255,255,0.2); font-size:2rem;">+</div>
+        <div>
+            <div class="summary-label">Mesai (Filtre)</div>
+            <div style="font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:rgba(255,255,255,0.6);">${mesaiToplam.toFixed(2)} ₺</div>
+        </div>
+        <div style="color:rgba(255,255,255,0.2); font-size:2rem;">=</div>
+        <div>
+            <div class="summary-label">Toplam Ödenecek</div>
+            <div class="summary-val">${grandTotal.toLocaleString('tr-TR',{minimumFractionDigits:2})} ₺</div>
+        </div>
+    `;
 
-            if (!res.ok) throw new Error("GitHub verisi çekilemedi.");
+    // Grafik
+    renderChart(db, user, hRate);
+}
 
-            const data = await res.json();
-            const db = JSON.parse(b64DecodeUnicode(data.content));
+function renderChart(db, user, hRate) {
+    const monthNames = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+    const monthlyData = new Array(12).fill(0);
+    const monthlyHours = new Array(12).fill(0);
 
-            // GitHub veritabanında giriş yapan kullanıcıyı bul
-            const user = db.users.find(u => u.user === loggedUser.user);
-            
-            if (!user) {
-                alert("Kullanıcı veritabanında bulunamadı.");
-                logout();
-                return;
+    db.records.filter(r => r.owner === user.user && r.type === 'Mesai').forEach(r => {
+        const m = parseInt(r.startDate.split('-')[1]) - 1;
+        const c = calcRow(r, hRate);
+        monthlyData[m] += c.cost;
+        monthlyHours[m] += c.hours;
+    });
+
+    if (myChart) myChart.destroy();
+    const ctx = document.getElementById('myChart').getContext('2d');
+    myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: monthNames,
+            datasets: [
+                {
+                    label: 'Mesai Bedeli (₺)',
+                    data: monthlyData.map(v => v.toFixed(2)),
+                    backgroundColor: 'rgba(107,70,193,0.7)',
+                    borderColor: '#6b46c1',
+                    borderWidth: 1.5,
+                    borderRadius: 4,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Mesai Saati',
+                    data: monthlyHours.map(v => v.toFixed(1)),
+                    type: 'line',
+                    borderColor: '#C0392B',
+                    backgroundColor: 'rgba(192,57,43,0.1)',
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    fill: true,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { labels: { font: { size: 11 } } } },
+            scales: {
+                y: { beginAtZero: true, position: 'left', grid: { color: '#eee' }, title: { display: true, text: '₺' } },
+                y1: { beginAtZero: true, position: 'right', grid: { display: false }, title: { display: true, text: 'Saat' } },
+                x: { grid: { display: false } }
             }
-
-            // Kayıtları kullanıcı adına göre filtrele
-            const myRecords = db.records.filter(r => r.ad === user.name);
-
-            // Profil Bilgilerini Bas
-            document.getElementById('dispName').innerText = user.name;
-            document.getElementById('dispTitle').innerText = user.title;
-            document.getElementById('currentDate').innerText = new Date().toLocaleDateString('tr-TR') + " itibariyle";
-
-            // Maaş Hesaplama (Maaş / 225 saat yasal standarttır)
-            const maas = parseFloat(user.salary) || 0;
-            const hRate = maas / 225; 
-            
-            document.getElementById('rateSalary').innerText = maas.toLocaleString('tr-TR') + " ₺";
-            document.getElementById('rate15').innerText = (hRate * 1.5).toFixed(2) + " ₺";
-            document.getElementById('rate20').innerText = (hRate * 2).toFixed(2) + " ₺";
-
-            // Hareketleri Listele (En yeni 15 kayıt)
-            const tbody = document.getElementById('movementsBody');
-            tbody.innerHTML = "";
-            myRecords.reverse().slice(0, 15).forEach(r => {
-                tbody.innerHTML += `<tr><td>${r.tarih}</td><td>${r.islem}</td></tr>`;
-            });
-
-            document.getElementById('grandTotal').innerText = maas.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + " ₺";
-
-        } catch (e) {
-            console.error("Hata:", e);
-            alert("Bağlantı hatası oluştu. Lütfen tekrar giriş yapın.");
-            logout();
         }
-    }
+    });
+}
 
-    function downloadPDF() {
-        const element = document.getElementById('pdf-content');
-        const opt = {
-            margin: 5,
-            filename: 'Panotech_Personel_Ekstre.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-        html2pdf().set(opt).from(element).save();
-    }
+function downloadPDF() {
+    const el = document.getElementById('pdf-content');
+    const opt = {
+        margin: 10,
+        filename: 'Panotech_Maas_Ekstresi.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(el).save();
+}
 
-    window.onload = renderPersonelData;
+renderData();
 </script>
 </body>
 </html>
