@@ -98,7 +98,6 @@
 </div>
 
 <script>
-    // GitHub Ayarları
     const CONFIG = {
         token: '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', 
         owner: 'grkndmrky3536',
@@ -106,34 +105,57 @@
     };
 
     function logout() {
-        sessionStorage.removeItem('loggedUser');
+        sessionStorage.clear();
         location.href = 'index.html';
     }
 
+    // Türkçe karakterleri bozmadan Base64 çözme fonksiyonu
+    function b64DecodeUnicode(str) {
+        return decodeURIComponent(atob(str).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+    }
+
     async function renderPersonelData() {
-        // SessionStorage kullanıyoruz ki tarayıcı kapanınca çıksın
+        // index.html'den gelen kullanıcı bilgisini kontrol et
         const loggedUser = JSON.parse(sessionStorage.getItem('loggedUser'));
         
-        if(!loggedUser) { 
+        if (!loggedUser || !loggedUser.user) { 
+            console.error("Oturum bulunamadı.");
             location.href = 'index.html'; 
             return; 
         }
 
         try {
             const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/data.json`;
-            const res = await fetch(url, { headers: { 'Authorization': `token ${CONFIG.token}` } });
-            const data = await res.json();
-            const db = JSON.parse(atob(data.content));
+            const res = await fetch(url, { 
+                headers: { 'Authorization': `token ${CONFIG.token}` },
+                cache: 'no-store' // Veriyi her zaman taze çek
+            });
 
+            if (!res.ok) throw new Error("GitHub verisi çekilemedi.");
+
+            const data = await res.json();
+            const db = JSON.parse(b64DecodeUnicode(data.content));
+
+            // GitHub veritabanında giriş yapan kullanıcıyı bul
             const user = db.users.find(u => u.user === loggedUser.user);
+            
+            if (!user) {
+                alert("Kullanıcı veritabanında bulunamadı.");
+                logout();
+                return;
+            }
+
+            // Kayıtları kullanıcı adına göre filtrele
             const myRecords = db.records.filter(r => r.ad === user.name);
 
-            // Profil Bilgileri
+            // Profil Bilgilerini Bas
             document.getElementById('dispName').innerText = user.name;
             document.getElementById('dispTitle').innerText = user.title;
             document.getElementById('currentDate').innerText = new Date().toLocaleDateString('tr-TR') + " itibariyle";
 
-            // Maaş ve Mesai Hesaplama (Maaş / 225 saat üzerinden)
+            // Maaş Hesaplama (Maaş / 225 saat yasal standarttır)
             const maas = parseFloat(user.salary) || 0;
             const hRate = maas / 225; 
             
@@ -141,18 +163,18 @@
             document.getElementById('rate15').innerText = (hRate * 1.5).toFixed(2) + " ₺";
             document.getElementById('rate20').innerText = (hRate * 2).toFixed(2) + " ₺";
 
-            // Hareketleri Listele
+            // Hareketleri Listele (En yeni 15 kayıt)
             const tbody = document.getElementById('movementsBody');
             tbody.innerHTML = "";
-            myRecords.reverse().slice(0, 10).forEach(r => {
+            myRecords.reverse().slice(0, 15).forEach(r => {
                 tbody.innerHTML += `<tr><td>${r.tarih}</td><td>${r.islem}</td></tr>`;
             });
 
             document.getElementById('grandTotal').innerText = maas.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + " ₺";
 
         } catch (e) {
-            console.error("Veri çekme hatası:", e);
-            alert("Veriler yüklenemedi, lütfen tekrar giriş yapın.");
+            console.error("Hata:", e);
+            alert("Bağlantı hatası oluştu. Lütfen tekrar giriş yapın.");
             logout();
         }
     }
@@ -160,8 +182,8 @@
     function downloadPDF() {
         const element = document.getElementById('pdf-content');
         const opt = {
-            margin: 10,
-            filename: 'Panotech_Ekstre.pdf',
+            margin: 5,
+            filename: 'Panotech_Personel_Ekstre.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
