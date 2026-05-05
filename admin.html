@@ -3,231 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PANOTECH MESAİ TAKİP SİSTEMİ YÖNETİCİ PANELİ</title>
+    <title>Panotech — Giriş</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; background-color: #f4f7f9; margin: 0; padding: 0; }
-        .header { background: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #b33a1b; }
-        .header h1 { color: #b33a1b; font-size: 1.2rem; margin: 0; text-transform: uppercase; }
-        
-        .main-container { max-width: 1000px; margin: 30px auto; background: white; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 25px; }
-        
-        .section-title { color: #6b46c1; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        
-        .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
-        .full-width { grid-column: span 2; }
-        
-        .btn-delete { background: #e53e3e; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: 0.3s; font-weight: bold; }
-        .btn-delete:hover { background: #c53030; transform: scale(1.05); }
+        :root {
+            --red: #C0392B;
+            --red-dark: #922b21;
+            --red-glow: rgba(192,57,43,0.35);
+            --black: #0d0d0d;
+            --white: #f8f5f0;
+            --gray: #aaa;
+        }
 
-        input, select { padding: 10px; border: 1px solid #ddd; border-radius: 5px; width: 100%; box-sizing: border-box; }
-        
-        .license-area { background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 15px 0; }
-        .license-grid { display: flex; gap: 20px; font-size: 0.9rem; }
-        
-        .btn-submit { background: #6b46c1; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .btn-submit:hover { background: #553c9a; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .staff-card { background: #fff5f5; border-radius: 8px; padding: 15px; margin-bottom: 10px; border-left: 5px solid #6b46c1; }
-        .staff-header { display: flex; justify-content: space-between; align-items: flex-start; font-weight: bold; margin-bottom: 8px; }
-        .staff-info { display: flex; gap: 10px; flex-wrap: wrap; }
-        .badge { background: #e2e8f0; padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; color: #4a5568; }
-        
-        .rate-box { text-align: right; font-size: 0.85rem; }
-        .rate-line { color: #4a5568; margin-bottom: 2px; }
-        .rate-val { font-weight: bold; color: #6b46c1; }
-        .rate-sunday { font-weight: bold; color: #b33a1b; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--black);
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
-        th { text-align: left; background: #6b46c1; color: white; padding: 10px; }
-        td { padding: 10px; border-bottom: 1px solid #eee; }
-        .multiplier { font-weight: bold; color: #b33a1b; }
+        /* Arka plan grid deseni */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(192,57,43,0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(192,57,43,0.06) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        /* Sol kırmızı panel */
+        .left-panel {
+            width: 55%;
+            background: var(--red);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px;
+            overflow: hidden;
+        }
+
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            right: -80px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 160px;
+            height: 160%;
+            background: var(--black);
+            clip-path: polygon(40% 0%, 100% 0%, 100% 100%, 0% 100%);
+        }
+
+        /* Büyük dekoratif daire */
+        .deco-circle {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            border: 80px solid rgba(0,0,0,0.12);
+            bottom: -150px;
+            right: -80px;
+            pointer-events: none;
+        }
+
+        .brand {
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 7rem;
+            color: white;
+            line-height: 0.9;
+            letter-spacing: 4px;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.3);
+        }
+
+        .brand-line {
+            width: 60px;
+            height: 4px;
+            background: white;
+            margin: 20px 0;
+            opacity: 0.7;
+        }
+
+        .brand-sub {
+            font-family: 'DM Sans', sans-serif;
+            color: rgba(255,255,255,0.85);
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            line-height: 1.8;
+        }
+
+        .brand-tagline {
+            margin-top: 40px;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        /* Sağ giriş paneli */
+        .right-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 60px 60px 100px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .login-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.2rem;
+            color: var(--white);
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+
+        .login-sub {
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .field {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: var(--white);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.25s;
+        }
+
+        .field input:focus {
+            background: rgba(255,255,255,0.08);
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px var(--red-glow);
+        }
+
+        .field input::placeholder { color: rgba(255,255,255,0.2); }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: var(--red);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .btn-login:hover {
+            background: var(--red-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--red-glow);
+        }
+
+        .btn-login:hover::before { opacity: 1; }
+        .btn-login:active { transform: translateY(0); }
+
+        .error-msg {
+            display: none;
+            background: rgba(192,57,43,0.15);
+            border: 1px solid rgba(192,57,43,0.4);
+            color: #ff8a7a;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .footer-note {
+            margin-top: 40px;
+            color: rgba(255,255,255,0.15);
+            font-size: 0.72rem;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        /* Animasyonlar */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .left-panel .brand { animation: fadeUp 0.8s ease both; }
+        .login-box { animation: fadeUp 0.8s ease 0.2s both; }
+
+        @media (max-width: 700px) {
+            body { flex-direction: column; }
+            .left-panel { width: 100%; padding: 40px; }
+            .left-panel::after { display: none; }
+            .brand-name { font-size: 4rem; }
+            .right-panel { padding: 40px 30px; }
+            .deco-circle { display: none; }
+        }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>PANOTECH YÖNETİCİ</h1>
-    <button onclick="location.href='index.html'" style="cursor:pointer; background:white; border:1px solid #ddd; padding:5px 15px; border-radius:4px;">Güvenli Çıkış</button>
+<div class="left-panel">
+    <div class="deco-circle"></div>
+    <div class="brand">
+        <div class="brand-name">PANO<br>TECH</div>
+        <div class="brand-line"></div>
+        <div class="brand-sub">
+            ASANSÖR KONTROL SİSTEMLERİ<br>
+            SAN. VE TİC. LTD. ŞTİ.
+        </div>
+        <div class="brand-tagline">Personel Yönetim & Mesai Takip Sistemi</div>
+    </div>
 </div>
 
-<div class="main-container">
-    <div class="section-title">👤 PERSONEL KAYIT FORMU</div>
-    <div class="form-grid">
-        <input type="text" id="pName" placeholder="Ad Soyad">
-        <input type="text" id="pUser" placeholder="Kullanıcı Adı">
-        <input type="password" id="pPass" placeholder="Şifre">
-        <input type="number" id="pSalary" placeholder="Net Maaş (TL)">
-    </div>
-    <div class="form-grid">
-        <select id="pGender"><option>Cinsiyet</option><option>Erkek</option><option>Kadın</option></select>
-        <input type="number" id="pAge" placeholder="Yaş">
-        <select id="pEdu" class="full-width"><option>Eğitim Durumu</option><option>Lise</option><option>Önlisans</option><option>Lisans</option></select>
-        <select id="pTitle" class="full-width">
-            <option value="">Ünvan Seçin</option>
-            <option value="TEKNİK DESTEK ELAMANI">TEKNİK DESTEK ELAMANI</option>
-            <option value="PANO MONTAJ USTASI">PANO MONTAJ USTASI</option>
-            <option value="PANO MONTAJ USTASI">STAJYER</option>
-            <option value="PANO MONTAJ USTASI">PATRON</option>
-            <option value="PANO MONTAJ USTASI">USTA BAŞI</option>
-            <option value="PANO MONTAJ USTASI">İŞÇİ</option>
-        </select>
-    </div>
+<div class="right-panel">
+    <div class="login-box">
+        <div class="login-title">SİSTEM GİRİŞİ</div>
+        <div class="login-sub">Kullanıcı bilgilerinizi girerek devam edin.</div>
 
-    <div class="license-area">
-        <strong>SÜRÜCÜ BELGELERİ:</strong>
-        <div class="license-grid" style="margin-top:10px;">
-            <label><input type="checkbox" name="lic" value="B"> B</label>
-            <label><input type="checkbox" name="lic" value="BE"> F</label>
-            <label><input type="checkbox" name="lic" value="C"> C</label>
-            <label><input type="checkbox" name="lic" value="D"> D</label>
-            <label><input type="checkbox" name="lic" value="G"> G (İş Makinası)</label>
+        <div class="field">
+            <label>Kullanıcı Adı</label>
+            <input type="text" id="username" placeholder="kullanici_adi" autocomplete="off">
         </div>
+        <div class="field">
+            <label>Şifre</label>
+            <input type="password" id="password" placeholder="••••••••">
+        </div>
+
+        <button class="btn-login" onclick="handleLogin()">GİRİŞ YAP →</button>
+
+        <div class="error-msg" id="errMsg">⚠ Hatalı kullanıcı adı veya şifre!</div>
+
+        <div class="footer-note">PANOTECH © 2026 — TÜM HAKLARI SAKLIDIR</div>
     </div>
-    <button class="btn-submit" onclick="saveStaff()">PERSONELİ SİSTEME TANIMLA</button>
-
-    <div class="section-title" style="margin-top:40px;">📋 KAYITLI PERSONEL LİSTESİ</div>
-    <div id="staffList"></div>
-
-    <div class="section-title" style="margin-top:40px;">📊 MESAİ VE İZİN HAREKETLERİ</div>
-    <div id="movementsTable"></div>
 </div>
 
 <script>
-    // 2026 TÜRKİYE RESMİ TATİL LİSTESİ
-    const resmiTatiller2026 = [
-        "2026-01-01", // Yılbaşı
-        "2026-04-23", // Ulusal Egemenlik ve Çocuk Bayramı
-        "2026-05-01", // Emek ve Dayanışma Günü
-        "2026-05-19", // Atatürk'ü Anma, Gençlik ve Spor Bayramı
-        "2026-07-15", // Demokrasi ve Milli Birlik Günü
-        "2026-08-30", // Zafer Bayramı
-        "2026-10-29", // Cumhuriyet Bayramı
-        // Dini Bayramlar
-        "2026-03-20", "2026-03-21", "2026-03-22", // Ramazan Bayramı
-        "2026-05-27", "2026-05-28", "2026-05-29", "2026-05-30" // Kurban Bayramı
-    ];
+    const DEFAULT_ADMIN = { user: "admin", pass: "1234", role: "admin", name: "Gürkan Demirkaya" };
 
-    function saveStaff() {
-        const uVal = document.getElementById('pUser').value.trim();
-        if(!uVal) { alert("Lütfen kullanıcı adı girin!"); return; }
+    document.addEventListener('keydown', e => { if(e.key === 'Enter') handleLogin(); });
 
-        const salary = parseFloat(document.getElementById('pSalary').value) || 0;
-        const licenses = Array.from(document.querySelectorAll('input[name="lic"]:checked')).map(c => c.value);
-        
-        const newStaff = {
-            name: document.getElementById('pName').value,
-            user: uVal,
-            pass: document.getElementById('pPass').value,
-            salary: salary,
-            hourlyRate: salary / 225, 
-            gender: document.getElementById('pGender').value,
-            age: document.getElementById('pAge').value,
-            edu: document.getElementById('pEdu').value,
-            title: document.getElementById('pTitle').value,
-            license: licenses.join(', '),
-            role: 'personel'
-        };
+    function handleLogin() {
+        const u = document.getElementById('username').value.trim();
+        const p = document.getElementById('password').value;
+        const err = document.getElementById('errMsg');
 
-        let db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
-        db.users.push(newStaff);
-        localStorage.setItem('panotech_db', JSON.stringify(db));
-        location.reload();
-    }
-
-    function deleteStaff(username) {
-        if(confirm(username + " kullanıcısını silmek istediğinize emin misiniz?")) {
-            let db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
-            db.users = db.users.filter(u => u.user !== username);
-            db.records = db.records.filter(r => r.owner !== username);
-            localStorage.setItem('panotech_db', JSON.stringify(db));
-            renderAll(); 
-        }
-    }
-
-    function calculateRow(r, hourlyRate) {
-        if(r.type === 'İzin') return { cost: 0, multi: 'İzinli', label: 'İzin' };
-        
-        const dateStr = r.startDate;
-        const date = new Date(dateStr);
-        const day = date.getDay(); 
-        const start = new Date(`${dateStr}T${r.in}`);
-        const end = new Date(`${dateStr}T${r.out}`);
-        const hours = (end - start) / (1000 * 60 * 60);
-
-        // 1. ÖNCELİK: RESMİ TATİL KONTROLÜ
-        if(resmiTatiller2026.includes(dateStr)) {
-            return { cost: hours * hourlyRate * 2, multi: 'x2.0', label: 'Resmi Tatil (%100)' };
-        }
-
-        // 2. ÖNCELİK: PAZAR GÜNÜ
-        if(day === 0) {
-            return { cost: hours * hourlyRate * 2, multi: 'x2.0', label: 'Pazar (%100)' };
-        }
-        
-        // 3. ÖNCELİK: CUMARTESİ VEYA HAFTA İÇİ AKŞAM
-        if(day === 6 || r.in >= "18:00") {
-            let sebep = day === 6 ? "Cumartesi" : "Akşam Mesaisi";
-            return { cost: hours * hourlyRate * 1.5, multi: 'x1.5', label: sebep + ' (%50)' };
-        }
-        
-        return { cost: hours * hourlyRate, multi: 'x1.0', label: 'Normal' };
-    }
-
-    function renderAll() {
         const db = JSON.parse(localStorage.getItem('panotech_db')) || { users: [], records: [] };
-        const staffDiv = document.getElementById('staffList');
-        
-        staffDiv.innerHTML = "";
+        const allUsers = [DEFAULT_ADMIN, ...db.users];
+        const found = allUsers.find(x => x.user === u && x.pass === p);
 
-        db.users.forEach(u => {
-            const card = document.createElement('div');
-            card.className = 'staff-card';
-            
-            const mesai15 = (u.hourlyRate * 1.5).toFixed(2);
-            const mesai20 = (u.hourlyRate * 2.0).toFixed(2);
-
-            card.innerHTML = `
-                <div class="staff-header">
-                    <div>
-                        <div style="font-size:1.1rem;">${u.name}</div>
-                        <div style="font-size:0.8rem; color:#666;">${u.title}</div>
-                    </div>
-                    <div class="rate-box">
-                        <div class="rate-line">Net Maaş: <b>${u.salary} ₺</b></div>
-                        <div class="rate-line">Mesai (%50): <span class="rate-val">${mesai15} ₺/Sa</span></div>
-                        <div class="rate-line">Pazar/Tatil (%100): <span class="rate-sunday">${mesai20} ₺/Sa</span></div>
-                        <button class="btn-delete" style="margin-top:8px;">PERSONELİ SİL</button>
-                    </div>
-                </div>
-                <div class="staff-info">
-                    <span class="badge">${u.gender}</span> <span class="badge">${u.age} Yaş</span> 
-                    <span class="badge">${u.edu}</span> <span class="badge">Ehliyet: ${u.license}</span>
-                </div>
-            `;
-            
-            card.querySelector('.btn-delete').onclick = () => deleteStaff(u.user);
-            staffDiv.appendChild(card);
-        });
-
-        const moveDiv = document.getElementById('movementsTable');
-        let tableHtml = `<table><tr><th>Personel</th><th>Tür</th><th>Tarih</th><th>Saat Aralığı</th><th>Çarpan</th><th>Hakediş</th></tr>`;
-        
-        db.records.forEach(r => {
-            const staff = db.users.find(u => u.user === r.owner) || { hourlyRate: 0 };
-            const calc = calculateRow(r, staff.hourlyRate);
-            tableHtml += `<tr>
-                <td>${r.ownerName}</td>
-                <td>${r.type}</td>
-                <td>${r.startDate}</td>
-                <td>${r.in || '-'} / ${r.out || '-'}</td>
-                <td class="multiplier" title="${calc.label}">${calc.multi} <small>(${calc.label})</small></td>
-                <td style="font-weight:bold;">${calc.cost.toFixed(2)} ₺</td>
-            </tr>`;
-        });
-        moveDiv.innerHTML = tableHtml + `</table>`;
+        if (found) {
+            err.style.display = 'none';
+            sessionStorage.setItem('loggedUser', JSON.stringify(found));
+            document.querySelector('.btn-login').textContent = 'YÖNLENDİRİLİYOR...';
+            setTimeout(() => {
+                location.href = found.role === 'admin' ? 'admin.html' : 'personel.html';
+            }, 400);
+        } else {
+            err.style.display = 'block';
+            document.getElementById('password').value = '';
+            document.getElementById('password').focus();
+        }
     }
-
-    renderAll();
 </script>
 </body>
 </html>
